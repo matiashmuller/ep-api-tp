@@ -6,7 +6,19 @@ router.get("/", (req, res) => {
   console.log("Esto es un mensaje para ver en consola");
   models.comision
     .findAll({
-      attributes: ["id", "letra", "dias", "turno", "id_materia", "id_docente"]
+      attributes: ["id", "letra", "dias", "turno"],
+      //Asocicación
+      include: [
+        {
+          as: 'materia', 
+          model:models.materia, 
+          attributes: [ 'id', "nombre"]
+        },
+        {
+          model:models.docente, 
+          attributes: [ 'id', "nombre", "apellido"]
+        }
+      ]
     })
     .then(comisiones => res.send(comisiones))
     .catch(() => res.sendStatus(500));
@@ -36,7 +48,19 @@ router.post("/", (req, res) => {
 const findComision = (id, { onSuccess, onNotFound, onError }) => {
   models.comision
     .findOne({
-      attributes: ["id", "letra", "dias", "turno", "id_materia", "id_docente"],
+      attributes: ["id", "letra", "dias", "turno"],
+      //Asocicación
+      include: [
+        {
+          as: 'materia', 
+          model:models.materia, 
+          attributes: [ 'id', "nombre"]
+        },
+        {
+          model:models.docente, 
+          attributes: [ 'id', "nombre", "apellido"]
+        }
+      ],
       where: { id }
     })
     .then(comision => (comision ? onSuccess(comision) : onNotFound()))

@@ -18,13 +18,13 @@ router.get("/", (req, res) => {
         {
           as: 'profQueLaDictan', 
           model:models.docente, 
-          attributes: ["dni", "nombre", "apellido"],
+          attributes: ["nombre", "apellido"],
           through: { attributes: ["letra", "dias", "turno"] }
         },
         {
           as: 'alumnQueLaCursan', 
           model:models.alumno, 
-          attributes: ["dni", "nombre", "apellido"],
+          attributes: ["nombre", "apellido"],
           through: { attributes: ["id"] }
         }
       ]
@@ -67,13 +67,13 @@ const findMateria = (id, { onSuccess, onNotFound, onError }) => {
         {
           as: 'profQueLaDictan', 
           model:models.docente, 
-          attributes: ["dni", "nombre", "apellido"],
+          attributes: ["nombre", "apellido"],
           through: { attributes: ["letra", "dias", "turno"] }
         },
         {
           as: 'alumnQueLaCursan', 
           model:models.alumno, 
-          attributes: ["dni", "nombre", "apellido"],
+          attributes: ["nombre", "apellido"],
           through: { attributes: ["id"] }
         }
       ],

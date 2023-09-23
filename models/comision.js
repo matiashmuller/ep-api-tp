@@ -10,8 +10,8 @@ module.exports = (sequelize, DataTypes) => {
   
   //Asociación con docente y materia como tabla intermedia
   comision.associate = function(models) {
-  	comision.belongsTo(models.materia, {foreignKey: 'id_materia'});
-    comision.belongsTo(models.docente, {foreignKey: 'id_docente'});
+  	comision.belongsTo(models.materia, { as: 'materia', foreignKey: 'id_materia'});
+    comision.belongsTo(models.docente, { foreignKey: 'id_docente'});
   };
 
   return comision;

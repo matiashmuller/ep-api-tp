@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
   //Asociación con carrera y materia como tabla intermedia
   carrera_materia.associate = function(models) {
     carrera_materia.belongsTo(models.carrera, {foreignKey: 'id_carrera'});
-  	carrera_materia.belongsTo(models.materia, {foreignKey: 'id_materia'});
+  	carrera_materia.belongsTo(models.materia, {as:'materia', foreignKey: 'id_materia'});
   };
   return carrera_materia;
 };

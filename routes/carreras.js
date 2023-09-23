@@ -18,7 +18,7 @@ router.get("/", (req, res) => {
         {
           as: 'alumnosInscriptos', 
           model:models.alumno, 
-          attributes: ["dni", "nombre", "apellido", "fecha_nac"]
+          attributes: ["dni", "nombre", "apellido"]
         }
       ]
     })
@@ -56,7 +56,7 @@ const findCarrera = (id, { onSuccess, onNotFound, onError }) => {
         {
           as: 'alumnosInscriptos', 
           model:models.alumno, 
-          attributes: ["dni", "nombre", "apellido", "fecha_nac"]
+          attributes: ["dni", "nombre", "apellido"]
         }
       ],
       where: { id }

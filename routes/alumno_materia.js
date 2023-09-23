@@ -6,7 +6,19 @@ router.get("/", (req, res) => {
   console.log("Esto es un mensaje para ver en consola");
   models.alumno_materia
     .findAll({
-      attributes: ["id", "id_alumno", "id_materia"]
+      attributes: ["id"],
+      //Asocicación
+      include: [
+        {
+          model:models.alumno, 
+          attributes: [ 'id', "nombre", "apellido"]
+        },
+        {
+          as: 'materia',
+          model:models.materia, 
+          attributes: [ 'id', "nombre"]
+        }
+      ],
     })
     .then(alumno_materia => res.send(alumno_materia))
     .catch(() => res.sendStatus(500));
@@ -33,7 +45,19 @@ router.post("/", (req, res) => {
 const findAlumno_materia = (id, { onSuccess, onNotFound, onError }) => {
   models.alumno_materia
     .findOne({
-      attributes: ["id", "id_alumno", "id_materia"],
+      attributes: ["id"],
+      //Asocicación
+      include: [
+        {
+          model:models.alumno, 
+          attributes: [ 'id', "nombre", "apellido"]
+        },
+        {
+          as: 'materia',
+          model:models.materia, 
+          attributes: [ 'id', "nombre"]
+        }
+      ],
       where: { id }
     })
     .then(alumno_materia => (alumno_materia ? onSuccess(alumno_materia) : onNotFound()))
