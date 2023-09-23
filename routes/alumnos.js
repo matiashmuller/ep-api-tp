@@ -6,7 +6,11 @@ router.get("/", (req, res) => {
   console.log("Esto es un mensaje para ver en consola");
   models.alumno
     .findAll({
-      attributes: ["id", "dni", "nombre", "apellido", "fecha_nac", "id_carrera"]
+      attributes: ["id", "dni", "nombre", "apellido", "fecha_nac"],
+      //Asocicacion
+      include: [
+        {as: 'carreraQueEstudia', model:models.carrera, attributes: ["id", "nombre"]}
+      ]
     })
     .then(alumnos => res.send(alumnos))
     .catch(() => res.sendStatus(500));
@@ -36,7 +40,11 @@ router.post("/", (req, res) => {
 const findAlumno = (id, { onSuccess, onNotFound, onError }) => {
   models.alumno
     .findOne({
-      attributes: ["id", "dni", "nombre", "apellido", "fecha_nac", "id_carrera"],
+      attributes: ["id", "dni", "nombre", "apellido", "fecha_nac"],
+      //Asocicacion
+      include: [
+        {as: 'carreraQueEstudia', model:models.carrera, attributes: ["id", "nombre"]}
+      ],
       where: { id }
     })
     .then(alumno => (alumno ? onSuccess(alumno) : onNotFound()))

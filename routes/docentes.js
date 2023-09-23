@@ -6,7 +6,16 @@ router.get("/", (req, res) => {
   console.log("Esto es un mensaje para ver en consola");
   models.docente
     .findAll({
-      attributes: ["id", "dni", "nombre", "apellido", "titulo", "fecha_nac"]
+      attributes: ["id", "dni", "nombre", "apellido", "titulo", "fecha_nac"],
+      //Asocicacion
+      include: [
+        {
+          as: 'materiasQueDicta', 
+          model:models.materia, 
+          attributes: ["id", "nombre", "carga_horaria"],
+          through: { attributes: ["letra", "dias", "turno"] }
+        }
+      ]
     })
     .then(docentes => res.send(docentes))
     .catch(() => res.sendStatus(500));
@@ -37,6 +46,15 @@ const findDocente = (id, { onSuccess, onNotFound, onError }) => {
   models.docente
     .findOne({
       attributes: ["id", "dni", "nombre", "apellido", "titulo", "fecha_nac"],
+      //Asocicacion
+      include: [
+        {
+          as: 'materiasQueDicta', 
+          model:models.materia, 
+          attributes: ["id", "nombre", "carga_horaria"],
+          through: { attributes: ["letra", "dias", "turno"] }
+        }
+      ],
       where: { id }
     })
     .then(docente => (docente ? onSuccess(docente) : onNotFound()))

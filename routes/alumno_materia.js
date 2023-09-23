@@ -4,27 +4,24 @@ var models = require("../models");
 
 router.get("/", (req, res) => {
   console.log("Esto es un mensaje para ver en consola");
-  models.comision
+  models.alumno_materia
     .findAll({
-      attributes: ["id", "letra", "dias", "turno", "id_materia", "id_docente"]
+      attributes: ["id", "id_alumno", "id_materia"]
     })
-    .then(comisiones => res.send(comisiones))
+    .then(alumno_materia => res.send(alumno_materia))
     .catch(() => res.sendStatus(500));
 });
 
 router.post("/", (req, res) => {
-  models.comision
+  models.alumno_materia
     .create({
-      letra: req.body.letra,
-      dias: req.body.dias,
-      turno: req.body.turno,
-      id_materia: req.body.id_materia,
-      id_docente: req.body.id_docente
+      id_alumno: req.body.id_alumno,
+      id_materia: req.body.id_materia
     })
-    .then(comision => res.status(201).send({ comisionCreada: comision }))
+    .then(alumno_materia => res.status(201).send({ alumno_materiaCreado: alumno_materia }))
     .catch(error => {
       if (error == "SequelizeUniqueConstraintError: Validation error") {
-        res.status(400).send('Bad request: ya existe esa comisión')
+        res.status(400).send('Bad request: ya existe en la base de datos')
       }
       else {
         console.log(`Error al intentar insertar en la base de datos: ${error}`)
@@ -33,45 +30,42 @@ router.post("/", (req, res) => {
     });
 });
 
-const findComision = (id, { onSuccess, onNotFound, onError }) => {
-  models.comision
+const findAlumno_materia = (id, { onSuccess, onNotFound, onError }) => {
+  models.alumno_materia
     .findOne({
-      attributes: ["id", "letra", "dias", "turno", "id_materia", "id_docente"],
+      attributes: ["id", "id_alumno", "id_materia"],
       where: { id }
     })
-    .then(comision => (comision ? onSuccess(comision) : onNotFound()))
+    .then(alumno_materia => (alumno_materia ? onSuccess(alumno_materia) : onNotFound()))
     .catch(() => onError());
 };
 
 router.get("/:id", (req, res) => {
-  findComision(req.params.id, {
-    onSuccess: comision => res.send(comision),
+  findAlumno_materia(req.params.id, {
+    onSuccess: alumno_materia => res.send(alumno_materia),
     onNotFound: () => res.sendStatus(404),
     onError: () => res.sendStatus(500)
   });
 });
 
 router.put("/:id", (req, res) => {
-  const onSuccess = comision =>
-    comision
+  const onSuccess = alumno_materia =>
+    alumno_materia
       .update({
-        letra: req.body.letra,
-        dias: req.body.dias,
-        turno: req.body.turno,
-        id_materia: req.body.id_materia,
-        id_docente: req.body.id_docente
-      }, { fields: ["letra", "dias", "turno", "id_materia", "id_docente"] })
+        id_alumno: req.body.id_alumno,
+        id_materia: req.body.id_materia
+      }, { fields: ["id_alumno", "id_materia"] })
       .then(() => res.sendStatus(200))
       .catch(error => {
         if (error == "SequelizeUniqueConstraintError: Validation error") {
-          res.status(400).send('Bad request: ya existe esa comisión')
+          res.status(400).send('Bad request: ya existe en la base de datos')
         }
         else {
           console.log(`Error al intentar actualizar la base de datos: ${error}`)
           res.sendStatus(500)
         }
       });
-  findComision(req.params.id, {
+  findAlumno_materia(req.params.id, {
     onSuccess,
     onNotFound: () => res.sendStatus(404),
     onError: () => res.sendStatus(500)
@@ -79,12 +73,12 @@ router.put("/:id", (req, res) => {
 });
 
 router.delete("/:id", (req, res) => {
-  const onSuccess = comision =>
-    comision
+  const onSuccess = alumno_materia =>
+    alumno_materia
       .destroy()
       .then(() => res.sendStatus(200))
       .catch(() => res.sendStatus(500));
-  findComision(req.params.id, {
+  findAlumno_materia(req.params.id, {
     onSuccess,
     onNotFound: () => res.sendStatus(404),
     onError: () => res.sendStatus(500)

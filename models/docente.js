@@ -7,8 +7,16 @@ module.exports = (sequelize, DataTypes) => {
     titulo: DataTypes.STRING,
     fecha_nac: DataTypes.DATEONLY
   }, {});
+  
+  //Asociación con materia - muchos a muchos a través de tabla intermedia: comision
   docente.associate = function(models) {
-    // associations can be defined here
+  	docente.belongsToMany(models.materia, {
+      as: 'materiasQueDicta',
+      through: models.comision,
+      foreignKey: 'id_docente',
+      otherKey: 'id_materia'
+    });
   };
+
   return docente;
 };
