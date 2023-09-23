@@ -6,7 +6,7 @@ router.get("/", (req, res) => {
   console.log("Esto es un mensaje para ver en consola");
   models.materia
     .findAll({
-      attributes: ["id", "nombre", "carga_horaria", "id_carrera"],
+      attributes: ["id", "nombre", "carga_horaria"],
       //Asocicación
       include: [
         {
@@ -55,7 +55,7 @@ router.post("/", (req, res) => {
 const findMateria = (id, { onSuccess, onNotFound, onError }) => {
   models.materia
     .findOne({
-      attributes: ["id", "nombre", "carga_horaria", "id_carrera"],
+      attributes: ["id", "nombre", "carga_horaria"],
       //Asocicación
       include: [
         {

@@ -14,9 +14,6 @@ module.exports = {
       carga_horaria: {
         type: Sequelize.INTEGER
       },
-      id_carrera: {
-        type: Sequelize.INTEGER
-      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
