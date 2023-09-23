@@ -6,7 +6,28 @@ router.get("/", (req, res) => {
   console.log("Esto es un mensaje para ver en consola");
   models.materia
     .findAll({
-      attributes: ["id", "nombre", "carga_horaria", "id_carrera"]
+      attributes: ["id", "nombre", "carga_horaria", "id_carrera"],
+      //Asocicación
+      include: [
+        {
+          as: 'carrerasQueLaIncluyen', 
+          model:models.carrera, 
+          attributes: ["nombre"],
+          through: { attributes: ["id"] }
+        },
+        {
+          as: 'profQueLaDictan', 
+          model:models.docente, 
+          attributes: ["dni", "nombre", "apellido"],
+          through: { attributes: ["letra", "dias", "turno"] }
+        },
+        {
+          as: 'alumnQueLaCursan', 
+          model:models.alumno, 
+          attributes: ["dni", "nombre", "apellido"],
+          through: { attributes: ["id"] }
+        }
+      ]
     })
     .then(materias => res.send(materias))
     .catch(() => res.sendStatus(500));
@@ -35,6 +56,27 @@ const findMateria = (id, { onSuccess, onNotFound, onError }) => {
   models.materia
     .findOne({
       attributes: ["id", "nombre", "carga_horaria", "id_carrera"],
+      //Asocicación
+      include: [
+        {
+          as: 'carrerasQueLaIncluyen', 
+          model:models.carrera, 
+          attributes: ["nombre"],
+          through: { attributes: ["id"] }
+        },
+        {
+          as: 'profQueLaDictan', 
+          model:models.docente, 
+          attributes: ["dni", "nombre", "apellido"],
+          through: { attributes: ["letra", "dias", "turno"] }
+        },
+        {
+          as: 'alumnQueLaCursan', 
+          model:models.alumno, 
+          attributes: ["dni", "nombre", "apellido"],
+          through: { attributes: ["id"] }
+        }
+      ],
       where: { id }
     })
     .then(materia => (materia ? onSuccess(materia) : onNotFound()))

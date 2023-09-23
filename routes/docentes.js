@@ -7,7 +7,7 @@ router.get("/", (req, res) => {
   models.docente
     .findAll({
       attributes: ["id", "dni", "nombre", "apellido", "titulo", "fecha_nac"],
-      //Asocicacion
+      //Asocicación
       include: [
         {
           as: 'materiasQueDicta', 
@@ -46,7 +46,7 @@ const findDocente = (id, { onSuccess, onNotFound, onError }) => {
   models.docente
     .findOne({
       attributes: ["id", "dni", "nombre", "apellido", "titulo", "fecha_nac"],
-      //Asocicacion
+      //Asocicación
       include: [
         {
           as: 'materiasQueDicta', 

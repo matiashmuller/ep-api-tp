@@ -6,7 +6,21 @@ router.get("/", (req, res) => {
   console.log("Esto es un mensaje para ver en consola");
   models.carrera
     .findAll({
-      attributes: ["id", "nombre"]
+      attributes: ["id", "nombre"],
+      //Asocicación
+      include: [
+        {
+          as: 'materiasIncluidas', 
+          model:models.materia, 
+          attributes: ["nombre", "carga_horaria"],
+          through: { attributes: ["id"] }
+        },
+        {
+          as: 'alumnosInscriptos', 
+          model:models.alumno, 
+          attributes: ["dni", "nombre", "apellido", "fecha_nac"]
+        }
+      ]
     })
     .then(carreras => res.send(carreras))
     .catch(() => res.sendStatus(500));
@@ -31,6 +45,20 @@ const findCarrera = (id, { onSuccess, onNotFound, onError }) => {
   models.carrera
     .findOne({
       attributes: ["id", "nombre"],
+      //Asocicación
+      include: [
+        {
+          as: 'materiasIncluidas', 
+          model:models.materia, 
+          attributes: ["nombre", "carga_horaria"],
+          through: { attributes: ["id"] }
+        },
+        {
+          as: 'alumnosInscriptos', 
+          model:models.alumno, 
+          attributes: ["dni", "nombre", "apellido", "fecha_nac"]
+        }
+      ],
       where: { id }
     })
     .then(carrera => (carrera ? onSuccess(carrera) : onNotFound()))

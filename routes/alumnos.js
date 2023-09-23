@@ -7,9 +7,19 @@ router.get("/", (req, res) => {
   models.alumno
     .findAll({
       attributes: ["id", "dni", "nombre", "apellido", "fecha_nac"],
-      //Asocicacion
+      //Asocicación
       include: [
-        {as: 'carreraQueEstudia', model:models.carrera, attributes: ["id", "nombre"]}
+        {
+          as: 'carreraQueEstudia', 
+          model:models.carrera, 
+          attributes: ["nombre"]
+        },
+        {
+          as: 'materiasQueCursa', 
+          model:models.materia, 
+          attributes: ["nombre", "carga_horaria"],
+          through: { attributes: ["id"] }
+        }
       ]
     })
     .then(alumnos => res.send(alumnos))
@@ -41,9 +51,19 @@ const findAlumno = (id, { onSuccess, onNotFound, onError }) => {
   models.alumno
     .findOne({
       attributes: ["id", "dni", "nombre", "apellido", "fecha_nac"],
-      //Asocicacion
+      //Asocicación
       include: [
-        {as: 'carreraQueEstudia', model:models.carrera, attributes: ["id", "nombre"]}
+        {
+          as: 'carreraQueEstudia', 
+          model:models.carrera, 
+          attributes: ["nombre"]
+        },
+        {
+          as: 'materiasQueCursa', 
+          model:models.materia, 
+          attributes: ["nombre", "carga_horaria"],
+          through: { attributes: ["id"] }
+        }
       ],
       where: { id }
     })
