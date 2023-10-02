@@ -5,11 +5,15 @@ var models = require("../models");
 router.get("/", (req, res) => {
   /*
   Toma de parámetros para paginación:
-  Toma los valores paginaActual y cantidadAVer pasados como parámetros y
-  asiga un valor por defecto a cada uno (0 y 5 respectivamente), a usarse
-  si no se pasara ningún parámetro.
+  Toma los valores pagina y cantPorPag pasados como parámetros, los parsea
+  a Int y luego comprueba: si algún valor de los pasados fuera aún inválido
+  (<=0 o no-número), asigna uno válido por defecto (1 y 5 respectivamente).
   */
-  const { paginaActual = 0, cantidadAVer = 5} = req.query;
+  let pagina = parseInt(req.query.pagina);
+  let cantPorPag = parseInt(req.query.cantPorPag);
+
+  pagina = isNaN(pagina) || pagina <= 0? 1 : pagina;
+  cantPorPag = isNaN(cantPorPag) || cantPorPag <= 0? 5 : cantPorPag;
 
   models.alumno
     .findAndCountAll({
@@ -29,17 +33,27 @@ router.get("/", (req, res) => {
         }
       ],
       /*
-      Paginación: Se muestran cantidadAVer (5 por defecto) elementos por página,
-      a partir de la página actual.
+      Paginación: Se muestran cantPorPag (5 por defecto) elementos por página,
+      a partir de la página actual. Por defecto considera la página 1 como la primera.
       Ejemplo:
-        Página 0 → Elementos 1 al 5
-        Pagina 1 → Elementos 6 al 10
-      El + parsea a número los valores tomados de los parámetros.
+        Página 1 → Elementos 1 al 5
+        Pagina 2 → Elementos 6 al 10
       */
-      limit: +cantidadAVer,
-      offset: (+paginaActual) * (+cantidadAVer)
+      limit: cantPorPag,
+      offset: (pagina-1) * (cantPorPag)
     })
-    .then(alumnos => res.send(alumnos))
+    .then(resp => {
+      const totalElementos = resp.count;
+      const alumnos = resp.rows;
+      const totalPaginas = Math.ceil(totalElementos/cantPorPag);
+
+      res.send({
+        totalElementos,
+        totalPaginas,
+        paginaNro: pagina,
+        alumnos
+      })
+    })
     .catch(() => res.sendStatus(500));
 });
 
