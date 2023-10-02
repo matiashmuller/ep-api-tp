@@ -47,7 +47,8 @@ router.get("/", (req, res) => {
         Pagina 2 → Elementos 6 al 10
       */
       limit: cantPorPag,
-      offset: (pagina - 1) * (cantPorPag)
+      offset: (pagina - 1) * (cantPorPag),
+      distinct: true
     })
     .then(resp => {
       const totalElementos = resp.count;
