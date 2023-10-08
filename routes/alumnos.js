@@ -1,8 +1,9 @@
 var express = require("express");
 var router = express.Router();
 var models = require("../models");
+const validarToken = require('../libs/validarToken');
 
-router.get("/", (req, res) => {
+router.get("/", validarToken, (req, res) => {
   /*
   Toma de parámetros para paginación:
   Toma los valores pagina y cantPorPag pasados como parámetros, los parsea

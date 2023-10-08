@@ -10,6 +10,7 @@ var materiasRouter = require('./routes/materias');
 var comisionesRouter = require('./routes/comisiones');
 var al_matRouter = require('./routes/alumno_materia');
 var car_matRouter = require('./routes/carrera_materia');
+var authRouter = require('./routes/authorization');
 
 var app = express();
 
@@ -23,7 +24,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-
+app.use('/auth', authRouter);
 app.use('/car', carrerasRouter);
 app.use('/doc', docentesRouter);
 app.use('/alum', alumnosRouter);
