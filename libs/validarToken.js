@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 //Valida la existencia de un token y verifica su validez
 module.exports = function validarToken(req, res, next) {
     //Obtiene el token desde el encabezado
-    const token = req.headers['x-access-token'];
+    const token = req.headers['token'];
     //Si no existe token da error y muestra aviso en .json
     if (!token) {
         return res.status(401).json({ auth: false, message: 'No existe token' });
