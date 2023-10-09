@@ -1,8 +1,9 @@
 var express = require("express");
 var router = express.Router();
 var models = require("../models");
+const validarToken = require('../libs/validarToken');
 
-router.get("/", (req, res) => {
+router.get("/", validarToken, (req, res) => {
   /*
   Toma de parámetros para paginación:
   Toma los valores pagina y cantPorPag pasados como parámetros, los parsea
@@ -65,7 +66,7 @@ router.get("/", (req, res) => {
     .catch(() => res.sendStatus(500));
 });
 
-router.post("/", (req, res) => {
+router.post("/", validarToken, (req, res) => {
   models.materia
     .create({
       nombre: req.body.nombre,
@@ -115,7 +116,7 @@ const findMateria = (id, { onSuccess, onNotFound, onError }) => {
     .catch(() => onError());
 };
 
-router.get("/:id", (req, res) => {
+router.get("/:id", validarToken, (req, res) => {
   findMateria(req.params.id, {
     onSuccess: materia => res.send(materia),
     onNotFound: () => res.sendStatus(404),
@@ -123,7 +124,7 @@ router.get("/:id", (req, res) => {
   });
 });
 
-router.put("/:id", (req, res) => {
+router.put("/:id", validarToken, (req, res) => {
   const onSuccess = materia =>
     materia
       .update({
@@ -148,7 +149,7 @@ router.put("/:id", (req, res) => {
   });
 });
 
-router.delete("/:id", (req, res) => {
+router.delete("/:id", validarToken, (req, res) => {
   const onSuccess = materia =>
     materia
       .destroy()

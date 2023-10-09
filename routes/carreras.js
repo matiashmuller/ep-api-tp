@@ -1,8 +1,9 @@
 var express = require("express");
 var router = express.Router();
 var models = require("../models");
+const validarToken = require('../libs/validarToken');
 
-router.get("/", (req, res) => {
+router.get("/", validarToken, (req, res) => {
   /*
   Toma de parámetros para paginación:
   Toma los valores pagina y cantPorPag pasados como parámetros, los parsea
@@ -59,7 +60,7 @@ router.get("/", (req, res) => {
     .catch(() => res.sendStatus(500));
 });
 
-router.post("/", (req, res) => {
+router.post("/", validarToken, (req, res) => {
   models.carrera
     .create({ nombre: req.body.nombre })
     .then(carrera => res.status(201).send({ id: carrera.id }))
@@ -98,7 +99,7 @@ const findCarrera = (id, { onSuccess, onNotFound, onError }) => {
     .catch(() => onError());
 };
 
-router.get("/:id", (req, res) => {
+router.get("/:id", validarToken, (req, res) => {
   findCarrera(req.params.id, {
     onSuccess: carrera => res.send(carrera),
     onNotFound: () => res.sendStatus(404),
@@ -106,7 +107,7 @@ router.get("/:id", (req, res) => {
   });
 });
 
-router.put("/:id", (req, res) => {
+router.put("/:id", validarToken, (req, res) => {
   const onSuccess = carrera =>
     carrera
       .update({ nombre: req.body.nombre }, { fields: ["nombre"] })
@@ -127,7 +128,7 @@ router.put("/:id", (req, res) => {
   });
 });
 
-router.delete("/:id", (req, res) => {
+router.delete("/:id", validarToken, (req, res) => {
   const onSuccess = carrera =>
     carrera
       .destroy()

@@ -59,7 +59,7 @@ router.get("/", validarToken, (req, res) => {
     .catch(() => res.sendStatus(500));
 });
 
-router.post("/", (req, res) => {
+router.post("/", validarToken, (req, res) => {
   models.alumno
     .create({
       dni: req.body.dni,
@@ -104,7 +104,7 @@ const findAlumno = (id, { onSuccess, onNotFound, onError }) => {
     .catch(() => onError());
 };
 
-router.get("/:id", (req, res) => {
+router.get("/:id", validarToken, (req, res) => {
   findAlumno(req.params.id, {
     onSuccess: alumno => res.send(alumno),
     onNotFound: () => res.sendStatus(404),
@@ -112,7 +112,7 @@ router.get("/:id", (req, res) => {
   });
 });
 
-router.put("/:id", (req, res) => {
+router.put("/:id", validarToken, (req, res) => {
   const onSuccess = alumno =>
     alumno
       .update({
@@ -139,7 +139,7 @@ router.put("/:id", (req, res) => {
   });
 });
 
-router.delete("/:id", (req, res) => {
+router.delete("/:id", validarToken, (req, res) => {
   const onSuccess = alumno =>
     alumno
       .destroy()
