@@ -5,6 +5,7 @@ var models = require("../models");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const validarToken = require('../libs/validarToken');
+const logger = require('../libs/logger');
 
 //Crear nuevo usuario
 router.post('/registro', async (req, res) => {
@@ -20,19 +21,40 @@ router.post('/registro', async (req, res) => {
         });
         //Crea un token válido por 1h usando el nombre de usuario elegido
         const token = jwt.sign(
-            { nombre }, 
+            { nombre },
             process.env.SECRET_KEY,
             //Expira en una hora
             { expiresIn: 60 * 60 }
         );
         //Muestra un JSON con el token creado
-        res.json({ message: 'Usuario nuevo registrado', auth: true, token });
+        res.status(200).json({ message: 'Usuario nuevo registrado', auth: true, token });
+        logger.info('Registro de usuario exitoso.', {
+            usuario: nombre,
+            metodo: 'post',
+            ruta: 'auth/registro',
+            cod: '200'
+        });
     } catch (e) {
         console.log(e);
-        e == "SequelizeUniqueConstraintError: Validation error"?
+        if (e == "SequelizeUniqueConstraintError: Validation error") {
+            logger.error('Error al registrar usuario.', {
+                motivo: 'Nombre de usuario incorrecto, ya está en uso.',
+                valorIngresado: nombre,
+                metodo: 'post',
+                ruta: 'auth/registro',
+                cod: '400'
+            });
             res.status(400).send('Bad request: Ese nombre de usuario ya está en uso')
-        :
-            res.status(500).send('Error al registrar usuario');
+        } else {
+            logger.error('Error al registrar usuario.',{
+                motivo: 'Error interno del servidor.',
+                valorIngresado: nombre,
+                metodo: 'post',
+                ruta: 'auth/registro',
+                cod: '500'
+            });
+            res.status(500).send('Error al registrar usuario.');
+        }
     }
 });
 
@@ -43,27 +65,44 @@ router.post('/login', async (req, res) => {
     //Validación de nombre: True si existe un usuario con el nombre dado, false caso contrario
     const usuario = await models.usuario.findOne({ where: { nombre } });
     //Si no existe el usuario con ese nombre, muestra el error
-    if (!usuario) { return res.status(404).send('Usuario no encontrado'); }
+    if (!usuario) {
+        logger.error('Error al iniciar sesión.', {
+            motivo: 'Nombre de usuario incorrecto.',
+            valorIngresado: nombre,
+            metodo: 'post',
+            ruta: 'auth/login',
+            cod: '404'
+        });
+        return res.status(404).send('Usuario no encontrado');
+    }
     //Validación de contraseña: True si la contraseña es la misma almacenada en la BD, false caso contrario
     const esContraseñaValida = await bcrypt.compare(contraseña, usuario.contraseña);
     //Si la contraseña no es la misma, muestra error y no proporciona el token
     if (!esContraseñaValida) {
+        logger.error('Error al iniciar sesión.', {
+            motivo: 'Contraseña incorrecta.',
+            valorIngresado: contraseña,
+            metodo: 'post',
+            ruta: 'auth/login',
+            cod: '401'
+        });
         return res.status(401).send({ message: 'Contraseña inválida', auth: false, token: null });
     }
     //Crea un token válido por 1h usando el nombre de usuario ingresado
     const token = jwt.sign(
-        { nombre }, 
+        { nombre },
         process.env.SECRET_KEY,
         //Expira en una hora
         { expiresIn: 60 * 60 }
     );
     //Muestra un mensaje de éxito y el token creado
     res.status(200).json({ message: 'Inicio de sesión exitoso', auth: true, token });
-});
-
-//Cerrar sesión
-router.get('/logout', async (req, res) => {
-    res.status(200).send({ message: 'Sesión cerrada', auth: false, token: null });
+    logger.info('Inicio de sesión exitoso.', {
+        usuario: nombre,
+        metodo: 'post',
+        ruta: 'auth/login',
+        cod: '200'
+    });
 });
 
 //Ver datos de la cuenta logueada
@@ -71,14 +110,39 @@ router.get('/cuenta', validarToken, async (req, res) => {
     //Busca al usuario logueado que está haciendo la solicitud por su nombre codificado en el token
     const usuario = await models.usuario.findOne({
         attributes: ["id", "nombre"],
-        where: { nombre : req.nombre }
+        where: { nombre: req.nombre }
     });
-    //Si nadie ha iniciado sesión, devuelve error
+    //Si ningún usuario se corresponde con los datos del token (nombre), muestra error
+    //Puede suceder por ejemplo si se usa un token aún válido, pero que fue dado a un usuario que fue eliminado
+    //CONSIDERAR LA REDUNDANCIA DE ESTE ERROR...
     if (!usuario) {
-        return res.status(404).send('Ningún usuario ha iniciado sesión.');
+        logger.error('Error al mostrar cuenta.', {
+            motivo: 'Ningún usuario se corresponde con el token.',
+            metodo: 'get',
+            ruta: 'auth/cuenta',
+            cod: '404'
+        });
+        return res.status(404).send('Ningún usuario se corresponde con el token.');
     }
-    //Muestra el usuario que ha iniciado sesión
+    //Muestra el usuario que tiene la sesión iniciada
     res.status(200).json(usuario);
+    logger.info('Éxito al mostrar cuenta.', {
+        usuario: req.nombre,
+        metodo: 'get',
+        ruta: 'auth/cuenta',
+        cod: '200'
+    });
+});
+
+//Cerrar sesión
+router.get('/logout', async (req, res) => {
+    //El token se borra del storage del navegador desde el front-end, y acá sólo envía una respuesta de éxito:
+    res.status(200).send({ message: 'Sesión cerrada.' });
+    logger.info('Cierre de sesión exitoso.', {
+        metodo: 'get',
+        ruta: 'auth/logout',
+        cod: '200'
+    });
 });
 
 module.exports = router;
