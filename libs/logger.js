@@ -29,8 +29,10 @@ const opcionesTransp = {
 };
 
 const logger = createLogger({
+    //Loguea a consola y a base de datos
     transports: [
         new transports.Console({
+            //Formato solo para consola
             format: combine(
                 colorize({ all: true }),
                 timestamp({

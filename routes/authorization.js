@@ -27,82 +27,95 @@ router.post('/registro', async (req, res) => {
             { expiresIn: 60 * 60 }
         );
         //Muestra un JSON con el token creado
-        res.status(200).json({ message: 'Usuario nuevo registrado', auth: true, token });
-        logger.info('Registro de usuario exitoso.', {
-            usuario: nombre,
-            metodo: 'post',
-            ruta: 'auth/registro',
-            cod: '200'
+        res.status(200).json({ message: `Éxito al registrar usuario. Usuario nuevo: ${nombre}.`, token });
+        logger.info(`Éxito al registrar usuario. Usuario nuevo: ${nombre}.`, {
+            cod: res.statusCode,
+            metodo: req.method,
+            estado: res.statusMessage,
+            ruta: req.url
         });
-    } catch (e) {
-        console.log(e);
-        if (e == "SequelizeUniqueConstraintError: Validation error") {
-            logger.error('Error al registrar usuario.', {
-                motivo: 'Nombre de usuario incorrecto, ya está en uso.',
-                valorIngresado: nombre,
-                metodo: 'post',
-                ruta: 'auth/registro',
-                cod: '400'
+    } catch (error) {
+        //Envía respuestas de error y logs a consola y bd
+        if (error == "SequelizeUniqueConstraintError: Validation error") {
+            res.status(400).send('Error al registrar usuario: El nombre de usuario ya está en uso.');
+            logger.error('Error al registrar usuario: El nombre de usuario ya está en uso.', {
+                cod: res.statusCode,
+                metodo: req.method,
+                estado: res.statusMessage,
+                ruta: req.url
             });
-            res.status(400).send('Bad request: Ese nombre de usuario ya está en uso')
         } else {
-            logger.error('Error al registrar usuario.',{
-                motivo: 'Error interno del servidor.',
-                valorIngresado: nombre,
-                metodo: 'post',
-                ruta: 'auth/registro',
-                cod: '500'
-            });
             res.status(500).send('Error al registrar usuario.');
+            logger.error('Error al registrar usuario.', {
+                cod: res.statusCode,
+                metodo: req.method,
+                estado: res.statusMessage,
+                ruta: req.url
+            });
         }
     }
 });
 
 //Iniciar sesión con usuario y contraseña
 router.post('/login', async (req, res) => {
-    //Toma el nombre y la contraseña del cuerpo de la solicitud
-    const { nombre, contraseña } = req.body;
-    //Validación de nombre: True si existe un usuario con el nombre dado, false caso contrario
-    const usuario = await models.usuario.findOne({ where: { nombre } });
-    //Si no existe el usuario con ese nombre, muestra el error
-    if (!usuario) {
-        logger.error('Error al iniciar sesión.', {
-            motivo: 'Nombre de usuario incorrecto.',
-            valorIngresado: nombre,
-            metodo: 'post',
-            ruta: 'auth/login',
-            cod: '404'
+    try {
+        //Toma el nombre y la contraseña del cuerpo de la solicitud
+        const { nombre, contraseña } = req.body;
+        //Validación de nombre: True si existe un usuario con el nombre dado, false caso contrario
+        const usuario = await models.usuario.findOne({ where: { nombre } });
+        //Si no existe el usuario con ese nombre, muestra el error
+        if (!usuario) {
+            throw new Error('Usuario no encontrado.')
+        }
+        //Validación de contraseña: True si la contraseña es la misma almacenada en la BD, false caso contrario
+        const esContraseñaValida = await bcrypt.compare(contraseña, usuario.contraseña);
+        //Si la contraseña no es la misma, muestra error y no proporciona el token
+        if (!esContraseñaValida) {
+            throw new Error('Contraseña incorrecta.')
+        }
+        //Crea un token válido por 1h usando el nombre de usuario ingresado
+        const token = jwt.sign(
+            { nombre },
+            process.env.SECRET_KEY,
+            //Expira en una hora
+            { expiresIn: 60 * 60 }
+        );
+        //Muestra un mensaje de éxito y el token creado
+        res.status(200).json({ message: `Éxito al iniciar sesión. Usuario autenticado: ${nombre}.`, token });
+        logger.info(`Éxito al iniciar sesión. Usuario autenticado: ${nombre}`, {
+            cod: res.statusCode,
+            metodo: req.method,
+            estado: res.statusMessage,
+            ruta: req.url
         });
-        return res.status(404).send('Usuario no encontrado');
+    } catch (error) {
+        //Envía respuestas de error y logs a consola y bd
+        if (error.message == 'Usuario no encontrado.') {
+            res.status(404).send(`Error: Usuario '${req.body.nombre}' no encontrado.`);
+            logger.error(`Error al iniciar sesión: Usuario '${req.body.nombre}' no encontrado.`, {
+                cod: res.statusCode,
+                metodo: req.method,
+                estado: res.statusMessage,
+                ruta: req.url
+            });
+        } else if (error.message == 'Contraseña incorrecta.') {
+            res.status(401).send('Error: Contraseña incorrecta.');
+            logger.error('Error al iniciar sesión: Contraseña incorrecta.', {
+                cod: res.statusCode,
+                metodo: req.method,
+                estado: res.statusMessage,
+                ruta: req.url
+            });
+        } else {
+            res.status(500).send('Error al iniciar sesión.');
+            logger.error('Error al iniciar sesión: Error en el servidor.', {
+                cod: res.statusCode,
+                metodo: req.method,
+                estado: res.statusMessage,
+                ruta: req.url
+            });
+        }
     }
-    //Validación de contraseña: True si la contraseña es la misma almacenada en la BD, false caso contrario
-    const esContraseñaValida = await bcrypt.compare(contraseña, usuario.contraseña);
-    //Si la contraseña no es la misma, muestra error y no proporciona el token
-    if (!esContraseñaValida) {
-        logger.error('Error al iniciar sesión.', {
-            motivo: 'Contraseña incorrecta.',
-            valorIngresado: contraseña,
-            metodo: 'post',
-            ruta: 'auth/login',
-            cod: '401'
-        });
-        return res.status(401).send({ message: 'Contraseña inválida', auth: false, token: null });
-    }
-    //Crea un token válido por 1h usando el nombre de usuario ingresado
-    const token = jwt.sign(
-        { nombre },
-        process.env.SECRET_KEY,
-        //Expira en una hora
-        { expiresIn: 60 * 60 }
-    );
-    //Muestra un mensaje de éxito y el token creado
-    res.status(200).json({ message: 'Inicio de sesión exitoso', auth: true, token });
-    logger.info('Inicio de sesión exitoso.', {
-        usuario: nombre,
-        metodo: 'post',
-        ruta: 'auth/login',
-        cod: '200'
-    });
 });
 
 //Ver datos de la cuenta logueada
@@ -126,22 +139,23 @@ router.get('/cuenta', validarToken, async (req, res) => {
     }
     //Muestra el usuario que tiene la sesión iniciada
     res.status(200).json(usuario);
-    logger.info('Éxito al mostrar cuenta.', {
-        usuario: req.nombre,
-        metodo: 'get',
-        ruta: 'auth/cuenta',
-        cod: '200'
+    logger.info(`Éxito al mostrar cuenta. Usuario: '${req.nombre}'`, {
+        cod: res.statusCode,
+        metodo: req.method,
+        estado: res.statusMessage,
+        ruta: req.url
     });
 });
 
 //Cerrar sesión
 router.get('/logout', async (req, res) => {
     //El token se borra del storage del navegador desde el front-end, y acá sólo envía una respuesta de éxito:
-    res.status(200).send({ message: 'Sesión cerrada.' });
-    logger.info('Cierre de sesión exitoso.', {
-        metodo: 'get',
-        ruta: 'auth/logout',
-        cod: '200'
+    res.status(200).send('Éxito al cerrar sesión.');
+    logger.info('Éxito al cerrar sesión.', {
+        cod: res.statusCode,
+        metodo: req.method,
+        estado: res.statusMessage,
+        ruta: req.url
     });
 });
 
