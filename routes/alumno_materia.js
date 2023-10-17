@@ -2,6 +2,7 @@ var express = require("express");
 var router = express.Router();
 var models = require("../models");
 const validarToken = require('../libs/validarToken');
+const { logger, loggerMeta } = require('../libs/logger');
 
 router.get("/", validarToken, (req, res) => {
   /*
@@ -16,62 +17,64 @@ router.get("/", validarToken, (req, res) => {
   pagina = isNaN(pagina) || pagina <= 0 ? 1 : pagina;
   cantPorPag = isNaN(cantPorPag) || cantPorPag <= 0 ? 5 : cantPorPag;
 
-  models.alumno_materia
-    .findAndCountAll({
-      attributes: ["id"],
-      //Asocicación
-      include: [
-        {
-          model: models.alumno,
-          attributes: ['id', "nombre", "apellido"]
-        },
-        {
-          as: 'materia',
-          model: models.materia,
-          attributes: ['id', "nombre"]
-        }
-      ],
-      /*
-      Paginación: Se muestran cantPorPag (5 por defecto) elementos por página,
-      a partir de la página actual. Por defecto considera la página 1 como la primera.
-      Ejemplo:
-        Página 1 → Elementos 1 al 5
-        Pagina 2 → Elementos 6 al 10
-      */
-      limit: cantPorPag,
-      offset: (pagina - 1) * (cantPorPag)
+  models.alumno_materia.findAndCountAll({
+    attributes: ["id"],
+    //Asocicación
+    include: [
+      {
+        model: models.alumno,
+        attributes: ['id', "nombre", "apellido"]
+      },
+      {
+        as: 'materia',
+        model: models.materia,
+        attributes: ['id', "nombre"]
+      }
+    ],
+    /*
+    Paginación: Se muestran cantPorPag (5 por defecto) elementos por página,
+    a partir de la página actual. Por defecto considera la página 1 como la primera.
+    Ejemplo:
+      Página 1 → Elementos 1 al 5
+      Pagina 2 → Elementos 6 al 10
+    */
+    limit: cantPorPag,
+    offset: (pagina - 1) * (cantPorPag)
+  }).then(resp => {
+    const totalElementos = resp.count;
+    const alumnos_materias = resp.rows;
+    const totalPaginas = Math.ceil(totalElementos / cantPorPag);
+    //Loguea y manda respuesta de éxito
+    logger.info('Éxito al mostrar alumno_materia.', loggerMeta(req, res));
+    res.send({
+      totalElementos,
+      totalPaginas,
+      paginaNro: pagina,
+      alumnos_materias
     })
-    .then(resp => {
-      const totalElementos = resp.count;
-      const alumnos_materias = resp.rows;
-      const totalPaginas = Math.ceil(totalElementos / cantPorPag);
-
-      res.send({
-        totalElementos,
-        totalPaginas,
-        paginaNro: pagina,
-        alumnos_materias
-      })
-    })
-    .catch(() => res.sendStatus(500));
+  }).catch(error => {
+    //Loguea y manda respuesta de error
+    logger.error('Error al mostrar alumno_materia.', loggerMeta(req, res));
+    res.status(500).send('Error al iniciar sesión.');
+  });
 });
 
 router.post("/", validarToken, (req, res) => {
-  models.alumno_materia
-    .create({
-      id_alumno: req.body.id_alumno,
-      id_materia: req.body.id_materia
-    })
-    .then(alumno_materia => res.status(201).send({ alumno_materiaCreado: alumno_materia }))
-    .catch(error => {
-      if (error == "SequelizeUniqueConstraintError: Validation error") {
-        res.status(400).send('Bad request: ya existe en la base de datos')
-      }
-      else {
-        console.log(`Error al intentar insertar en la base de datos: ${error}`)
-        res.sendStatus(500)
-      }
-    });
+  models.alumno_materia.create({
+    id_alumno: req.body.id_alumno,
+    id_materia: req.body.id_materia
+  }).then(alumno_materia => {
+    logger.info('Éxito al registrar alumno_materia.', loggerMeta(req, res));
+    res.status(201).send({ creado: alumno_materia });
+  }).catch(error => {
+    if (error == "SequelizeUniqueConstraintError: Validation error") {
+      res.status(400).send('Bad request: ya existe en la base de datos')
+    }
+    else {
+      console.log(`Error al intentar insertar en la base de datos: ${error}`)
+      res.sendStatus(500)
+    }
+  });
 });
 
 const findAlumno_materia = (id, { onSuccess, onNotFound, onError }) => {

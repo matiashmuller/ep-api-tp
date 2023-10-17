@@ -5,7 +5,8 @@ var models = require("../models");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const validarToken = require('../libs/validarToken');
-const logger = require('../libs/logger');
+const { logger, loggerMeta } = require('../libs/logger');
+
 
 //Crear nuevo usuario
 router.post('/registro', async (req, res) => {
@@ -27,31 +28,16 @@ router.post('/registro', async (req, res) => {
             { expiresIn: 60 * 60 }
         );
         //Muestra un JSON con el token creado
+        logger.info(`Éxito al registrar usuario. Usuario nuevo: ${nombre}.`, loggerMeta(req, res));
         res.status(200).json({ message: `Éxito al registrar usuario. Usuario nuevo: ${nombre}.`, token });
-        logger.info(`Éxito al registrar usuario. Usuario nuevo: ${nombre}.`, {
-            cod: res.statusCode,
-            metodo: req.method,
-            estado: res.statusMessage,
-            ruta: req.url
-        });
     } catch (error) {
         //Envía respuestas de error y logs a consola y bd
         if (error == "SequelizeUniqueConstraintError: Validation error") {
+            logger.error('Error al registrar usuario: El nombre de usuario ya está en uso.', loggerMeta(req, res));
             res.status(400).send('Error al registrar usuario: El nombre de usuario ya está en uso.');
-            logger.error('Error al registrar usuario: El nombre de usuario ya está en uso.', {
-                cod: res.statusCode,
-                metodo: req.method,
-                estado: res.statusMessage,
-                ruta: req.url
-            });
         } else {
+            logger.error('Error al registrar usuario.', loggerMeta(req, res));
             res.status(500).send('Error al registrar usuario.');
-            logger.error('Error al registrar usuario.', {
-                cod: res.statusCode,
-                metodo: req.method,
-                estado: res.statusMessage,
-                ruta: req.url
-            });
         }
     }
 });
@@ -80,40 +66,20 @@ router.post('/login', async (req, res) => {
             //Expira en una hora
             { expiresIn: 60 * 60 }
         );
-        //Muestra un mensaje de éxito y el token creado
+        //Loguea y muestra un mensaje de éxito y el token creado
+        logger.info(`Éxito al iniciar sesión. Usuario autenticado: ${nombre}`, loggerMeta(req,res));
         res.status(200).json({ message: `Éxito al iniciar sesión. Usuario autenticado: ${nombre}.`, token });
-        logger.info(`Éxito al iniciar sesión. Usuario autenticado: ${nombre}`, {
-            cod: res.statusCode,
-            metodo: req.method,
-            estado: res.statusMessage,
-            ruta: req.url
-        });
     } catch (error) {
         //Envía respuestas de error y logs a consola y bd
         if (error.message == 'Usuario no encontrado.') {
-            res.status(404).send(`Error: Usuario '${req.body.nombre}' no encontrado.`);
-            logger.error(`Error al iniciar sesión: Usuario '${req.body.nombre}' no encontrado.`, {
-                cod: res.statusCode,
-                metodo: req.method,
-                estado: res.statusMessage,
-                ruta: req.url
-            });
+            logger.error(`Error al iniciar sesión: Usuario '${req.body.nombre}' no encontrado.`, loggerMeta(req, res));
+            res.status(404).send(`Error: Usuario '${req.body.nombre}' no encontrado.`); 
         } else if (error.message == 'Contraseña incorrecta.') {
+            logger.error('Error al iniciar sesión: Contraseña incorrecta.', loggerMeta(req, res));
             res.status(401).send('Error: Contraseña incorrecta.');
-            logger.error('Error al iniciar sesión: Contraseña incorrecta.', {
-                cod: res.statusCode,
-                metodo: req.method,
-                estado: res.statusMessage,
-                ruta: req.url
-            });
         } else {
+            logger.error('Error al iniciar sesión: Error en el servidor.', loggerMeta(req, res));
             res.status(500).send('Error al iniciar sesión.');
-            logger.error('Error al iniciar sesión: Error en el servidor.', {
-                cod: res.statusCode,
-                metodo: req.method,
-                estado: res.statusMessage,
-                ruta: req.url
-            });
         }
     }
 });
@@ -125,38 +91,27 @@ router.get('/cuenta', validarToken, async (req, res) => {
         attributes: ["id", "nombre"],
         where: { nombre: req.nombre }
     });
+
+    /*
+    Considerar este error y comprobación? La validación ya la hace 'validarToken'
     //Si ningún usuario se corresponde con los datos del token (nombre), muestra error
     //Puede suceder por ejemplo si se usa un token aún válido, pero que fue dado a un usuario que fue eliminado
-    //CONSIDERAR LA REDUNDANCIA DE ESTE ERROR...
     if (!usuario) {
-        logger.error('Error al mostrar cuenta.', {
-            motivo: 'Ningún usuario se corresponde con el token.',
-            metodo: 'get',
-            ruta: 'auth/cuenta',
-            cod: '404'
-        });
         return res.status(404).send('Ningún usuario se corresponde con el token.');
+        logger.error('Error al mostrar cuenta: el usuario no coincide con el token.', loggerMeta(req, res));
     }
+    */
+
     //Muestra el usuario que tiene la sesión iniciada
+    logger.info(`Éxito al mostrar cuenta. Usuario: '${req.nombre}'`, loggerMeta(req, res));
     res.status(200).json(usuario);
-    logger.info(`Éxito al mostrar cuenta. Usuario: '${req.nombre}'`, {
-        cod: res.statusCode,
-        metodo: req.method,
-        estado: res.statusMessage,
-        ruta: req.url
-    });
 });
 
 //Cerrar sesión
 router.get('/logout', async (req, res) => {
     //El token se borra del storage del navegador desde el front-end, y acá sólo envía una respuesta de éxito:
+    logger.info('Éxito al cerrar sesión.', loggerMeta(req, res));
     res.status(200).send('Éxito al cerrar sesión.');
-    logger.info('Éxito al cerrar sesión.', {
-        cod: res.statusCode,
-        metodo: req.method,
-        estado: res.statusMessage,
-        ruta: req.url
-    });
 });
 
 module.exports = router;

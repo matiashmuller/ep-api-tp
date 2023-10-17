@@ -28,6 +28,19 @@ const opcionesTransp = {
     }
 };
 
+//Función que retorna el json para pasar en los logs como metadata, evita repetición de código
+const loggerMeta = (req, res) => {
+    return {
+        codigo: res.statusCode,
+        metodo: req.method,
+        estado: res.statusMessage,
+        ruta: req.baseUrl,
+        subRuta: req.url,
+        encabezados: req.headers
+    }
+};
+
+//Crea el logger
 const logger = createLogger({
     //Loguea a consola y a base de datos
     transports: [
@@ -46,4 +59,4 @@ const logger = createLogger({
     ]
 });
 
-module.exports = logger;
+module.exports = { loggerMeta, logger };
