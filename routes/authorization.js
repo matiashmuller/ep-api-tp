@@ -28,17 +28,16 @@ router.post('/registro', async (req, res) => {
             { expiresIn: 60 * 60 }
         );
         //Muestra un JSON con el token creado
-        logger.info(`Éxito al registrar usuario. Usuario nuevo: ${nombre}.`, loggerMeta(req, res));
         res.status(200).json({ message: `Éxito al registrar usuario. Usuario nuevo: ${nombre}.`, token });
+        logger.info(`Éxito al registrar usuario. Usuario nuevo: ${nombre}.`, loggerMeta(req, res));
     } catch (error) {
         //Envía respuestas de error y logs a consola y bd
         if (error == "SequelizeUniqueConstraintError: Validation error") {
-            logger.error('Error al registrar usuario: El nombre de usuario ya está en uso.', loggerMeta(req, res));
             res.status(400).send('Error al registrar usuario: El nombre de usuario ya está en uso.');
         } else {
-            logger.error('Error al registrar usuario.', loggerMeta(req, res));
             res.status(500).send('Error al registrar usuario.');
         }
+        logger.error(`${error}`, loggerMeta(req, res));
     }
 });
 
@@ -67,20 +66,18 @@ router.post('/login', async (req, res) => {
             { expiresIn: 60 * 60 }
         );
         //Loguea y muestra un mensaje de éxito y el token creado
-        logger.info(`Éxito al iniciar sesión. Usuario autenticado: ${nombre}`, loggerMeta(req,res));
         res.status(200).json({ message: `Éxito al iniciar sesión. Usuario autenticado: ${nombre}.`, token });
+        logger.info(`Éxito al iniciar sesión. Usuario autenticado: ${nombre}`, loggerMeta(req,res));
     } catch (error) {
         //Envía respuestas de error y logs a consola y bd
         if (error.message == 'Usuario no encontrado.') {
-            logger.error(`Error al iniciar sesión: Usuario '${req.body.nombre}' no encontrado.`, loggerMeta(req, res));
             res.status(404).send(`Error: Usuario '${req.body.nombre}' no encontrado.`); 
         } else if (error.message == 'Contraseña incorrecta.') {
-            logger.error('Error al iniciar sesión: Contraseña incorrecta.', loggerMeta(req, res));
             res.status(401).send('Error: Contraseña incorrecta.');
         } else {
-            logger.error('Error al iniciar sesión: Error en el servidor.', loggerMeta(req, res));
-            res.status(500).send('Error al iniciar sesión.');
+            res.status(500).send(`Error al iniciar sesión.`);
         }
+        logger.error(`${error}`, loggerMeta(req, res));
     }
 });
 
@@ -103,15 +100,15 @@ router.get('/cuenta', validarToken, async (req, res) => {
     */
 
     //Muestra el usuario que tiene la sesión iniciada
-    logger.info(`Éxito al mostrar cuenta. Usuario: '${req.nombre}'`, loggerMeta(req, res));
     res.status(200).json(usuario);
+    logger.info(`Éxito al mostrar cuenta. Usuario: '${req.nombre}'`, loggerMeta(req, res));
 });
 
 //Cerrar sesión
 router.get('/logout', async (req, res) => {
     //El token se borra del storage del navegador desde el front-end, y acá sólo envía una respuesta de éxito:
-    logger.info('Éxito al cerrar sesión.', loggerMeta(req, res));
     res.status(200).send('Éxito al cerrar sesión.');
+    logger.info('Éxito al cerrar sesión.', loggerMeta(req, res));
 });
 
 module.exports = router;
