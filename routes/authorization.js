@@ -7,7 +7,6 @@ const bcrypt = require('bcrypt');
 const validarToken = require('../libs/validarToken');
 const { logger, loggerMeta } = require('../libs/logger');
 
-
 //Crear nuevo usuario
 router.post('/registro', async (req, res) => {
     try {

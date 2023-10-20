@@ -55,7 +55,7 @@ router.get("/", validarToken, async (req, res) => {
     });
     logger.info('Éxito al mostrar alumno.', loggerMeta(req, res));
   } catch (error) {
-    res.status(500).send('Error al mostrar alumno.');
+    res.sendStatus(500)
     logger.error(`${error}`, loggerMeta(req, res));
   }
 });
@@ -70,7 +70,7 @@ router.post("/", validarToken, async (req, res) => {
       id_carrera: req.body.id_carrera
     });
 
-    res.status(201).send({ id: alumno.id });
+    res.status(201).send({ estado: 'Éxito al crear alumno', id: alumno.id });
     logger.info('Éxito al registrar alumno.', loggerMeta(req, res));
   } catch (error) {
     if (error == "SequelizeUniqueConstraintError: Validation error") {
@@ -83,103 +83,88 @@ router.post("/", validarToken, async (req, res) => {
   }
 });
 
-const findAlumno = async (id, { onSuccess, onNotFound, onError }) => {
-  try {
-    const alumno = await models.alumno.findOne({
-      attributes: ["id", "dni", "nombre", "apellido", "fecha_nac"],
-      //Asocicación
-      include: [{
-        as: 'carreraQueEstudia',
-        model: models.carrera,
-        attributes: ["nombre"]
-      }, {
-        as: 'materiasQueCursa',
-        model: models.materia,
-        attributes: ["nombre", "carga_horaria"],
-        through: { attributes: ["id"] }
-      }],
-      where: { id }
-    });
-    alumno ? onSuccess(alumno) : onNotFound();
-  } catch (error) {
-    onError(error)
+const findAlumno = async (id) => {
+  const alumno = await models.alumno.findOne({
+    attributes: ["id", "dni", "nombre", "apellido", "fecha_nac"],
+    //Asocicación
+    include: [{
+      as: 'carreraQueEstudia',
+      model: models.carrera,
+      attributes: ["nombre"]
+    }, {
+      as: 'materiasQueCursa',
+      model: models.materia,
+      attributes: ["nombre", "carga_horaria"],
+      through: { attributes: ["id"] }
+    }],
+    where: { id }
+  });
+  if (!alumno) {
+    throw new Error('Alumno no encontrado.')
   }
+  return alumno;
 };
 
-router.get("/:id", validarToken, (req, res) => {
-  findAlumno(req.params.id, {
-    onSuccess: alumno => {
-      res.send(alumno);
-      logger.info('Éxito al mostrar alumno.', loggerMeta(req, res));
-    },
-    onNotFound: () => {
-      res.sendStatus(404)
-      logger.error('No encontrado.', loggerMeta(req, res));
-    },
-    onError: error => {
-      res.sendStatus(500);
-      logger.error(`${error}`, loggerMeta(req, res));
+//hacer 'error catcher?'
+
+router.get("/:id", validarToken, async (req, res) => {
+  try {
+    const alumno = await findAlumno(req.params.id);
+    res.json(alumno);
+    logger.info('Éxito al mostrar alumno.', loggerMeta(req, res));
+  } catch (error) {
+    if (error.message == 'Alumno no encontrado.') {
+      res.status(404).send(`Error: Alumno con id ${req.params.id} no encontrado.`);
+    } else {
+      res.sendStatus(500)
     }
-  });
+    logger.error(`${error}`, loggerMeta(req, res));
+  }
 });
 
-router.put("/:id", validarToken, (req, res) => {
-  findAlumno(req.params.id, {
-    onSuccess: alumno => {
-      try {
-        alumno.update({
-          dni: req.body.dni,
-          nombre: req.body.nombre,
-          apellido: req.body.apellido,
-          fecha_nac: req.body.fecha_nac,
-          id_carrera: req.body.id_carrera
-        }, {
-          fields: ["dni", "nombre", "apellido", "fecha_nac", "id_carrera"]
-        })
-        res.sendStatus(200);
-        logger.info('Éxito al actualizar alumno.', loggerMeta(req, res));
-      } catch (error) {
-        if (error == "SequelizeDatabaseError") {
-          res.status(400).send('Bad request: ya existe en la base de datos')
-        }
-        else {
-          res.sendStatus(500)
-        }
-        logger.error(`${error}`, loggerMeta(req, res));
-      }
-    },
-    onNotFound: () => {
-      res.sendStatus(404)
-      logger.error('No encontrado.', loggerMeta(req, res));
-    },
-    onError: error => {
-      res.sendStatus(500);
-      logger.error(`${error}`, loggerMeta(req, res));
+router.put("/:id", validarToken, async (req, res) => {
+  try {
+    const alumno = await findAlumno(req.params.id);
+
+    await alumno.update({
+      dni: req.body.dni,
+      nombre: req.body.nombre,
+      apellido: req.body.apellido,
+      fecha_nac: req.body.fecha_nac,
+      id_carrera: req.body.id_carrera
+    }, {
+      fields: ["dni", "nombre", "apellido", "fecha_nac", "id_carrera"]
+    });
+
+    res.status(200).json({ estado: 'Éxito al actualizar alumno.', alumnoActualizado: alumno });
+    logger.info('Éxito al actualizar alumno.', loggerMeta(req, res));
+  } catch (error) {
+    if (error.message == 'Alumno no encontrado.') {
+      res.status(404).send(`Error: Alumno con id ${req.params.id} no encontrado.`);
+    } else {
+      res.sendStatus(500)
     }
-  });
+    logger.error(`${error}`, loggerMeta(req, res));
+  }
 });
 
-router.delete("/:id", validarToken, (req, res) => {
-  findAlumno(req.params.id, {
-    onSuccess: alumno => {
-      try {
-        alumno.destroy();
-        res.sendStatus(200);
-        logger.info('Éxito al borrar alumno.', loggerMeta(req, res));
-      } catch (error) {
-        res.sendStatus(500)
-        logger.error(`${error}`, loggerMeta(req, res));
-      }
-    },
-    onNotFound: () => {
-      res.sendStatus(404)
-      logger.error('No encontrado.', loggerMeta(req, res));
-    },
-    onError: error => {
-      res.sendStatus(500);
-      logger.error(`${error}`, loggerMeta(req, res));
+router.delete("/:id", validarToken, async (req, res) => {
+  try {
+    const alumno = await findAlumno(req.params.id);
+
+    await alumno.destroy();
+
+    res.status(200).send('Éxito al eliminar alumno.');
+    logger.info('Éxito al eliminar alumno.', loggerMeta(req, res));
+
+  } catch (error) {
+    if (error.message == 'Alumno no encontrado.') {
+      res.status(404).send(`Error: Alumno con id ${req.params.id} no encontrado.`);
+    } else {
+      res.sendStatus(500)
     }
-  });
+    logger.error(`${error}`, loggerMeta(req, res));
+  }
 });
 
 module.exports = router;
