@@ -3,6 +3,7 @@ var router = express.Router();
 var models = require("../models");
 const validarToken = require('../libs/validarToken');
 const { logger, loggerMeta } = require('../libs/logger');
+const { buscarEntidad, responderAlError } = require('../libs/helper');
 
 //Mostrar todos los elementos de la tabla, paginados
 router.get("/", validarToken, async (req, res) => {
@@ -61,7 +62,7 @@ router.get("/", validarToken, async (req, res) => {
   }
 });
 
-//Crear con los valores del cuerpo de la petición
+//Crear registro con los valores del cuerpo de la petición
 router.post("/", validarToken, async (req, res) => {
   try {
     const alumno = await models.alumno.create({
@@ -86,11 +87,11 @@ router.post("/", validarToken, async (req, res) => {
 });
 
 //Búsqueda por id
-const findAlumno = async (id) => {
-  const alumno = await models.alumno.findOne({
-    attributes: ["id", "dni", "nombre", "apellido", "fecha_nac"],
-    //Asocicación
-    include: [{
+const findAlumno = (id) => {
+  return buscarEntidad(
+    models.alumno,
+    ["id", "dni", "nombre", "apellido", "fecha_nac"],
+    [{
       as: 'carreraQueEstudia',
       model: models.carrera,
       attributes: ["nombre"]
@@ -100,23 +101,10 @@ const findAlumno = async (id) => {
       attributes: ["nombre", "carga_horaria"],
       through: { attributes: ["id"] }
     }],
-    where: { id }
-  });
-  if (!alumno) {
-    throw new Error('Alumno no encontrado.')
-  }
-  return alumno;
+    id,
+    'Alumno'
+  );
 };
-
-//Respuesta a error parametrizada para métodos que incluyen una búsqueda
-const responderAlError = (error, req, res, id) => {
-  if (error.message == 'Alumno no encontrado.') {
-    res.status(404).send(`Error: Alumno con id ${id} no encontrado.`);
-  } else {
-    res.sendStatus(500)
-  }
-  logger.error(`${error}`, loggerMeta(req, res));
-}
 
 //Obtener por id
 router.get("/:id", validarToken, async (req, res) => {
@@ -125,7 +113,7 @@ router.get("/:id", validarToken, async (req, res) => {
     res.json(alumno);
     logger.info('Éxito al mostrar alumno.', loggerMeta(req, res));
   } catch (error) {
-    responderAlError(error,req,res,req.params.id);
+    responderAlError(error, req, res, req.params.id, 'Alumno');
   }
 });
 
@@ -147,7 +135,7 @@ router.put("/:id", validarToken, async (req, res) => {
     res.status(200).json({ estado: 'Éxito al actualizar alumno.', alumnoActualizado: alumno });
     logger.info('Éxito al actualizar alumno.', loggerMeta(req, res));
   } catch (error) {
-    responderAlError(error,req,res,req.params.id);
+    responderAlError(error, req, res, req.params.id, 'Alumno');
   }
 });
 
@@ -162,7 +150,7 @@ router.delete("/:id", validarToken, async (req, res) => {
     logger.info('Éxito al eliminar alumno.', loggerMeta(req, res));
 
   } catch (error) {
-    responderAlError(error,req,res,req.params.id);
+    responderAlError(error, req, res, req.params.id, 'Alumno');
   }
 });
 
