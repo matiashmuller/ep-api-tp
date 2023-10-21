@@ -3,10 +3,11 @@ var router = express.Router();
 var models = require("../models");
 const validarToken = require('../libs/validarToken');
 const { logger, loggerMeta } = require('../libs/logger');
-const { buscarEntidad, responderAlError, obtenerTodos, obtenerPorId, borrarPorId } = require('../libs/helper');
+const { buscarEntidad, responderAlError, obtenerTodos, obtenerPorId, borrarPorId, crearNuevo } = require('../libs/helper');
 
 const modelo = models.alumno
-const atributos = ["id", "dni", "nombre", "apellido", "fecha_nac"]
+const atributosAMostrar = ["id", "dni", "nombre", "apellido", "fecha_nac"]
+const camposACrear = ["dni", "nombre", "apellido", "fecha_nac", "id_carrera"]
 const incluye = [{
   as: 'carreraQueEstudia',
   model: models.carrera,
@@ -19,31 +20,10 @@ const incluye = [{
 }]
 const nombreEntidad = 'alumno'
 //Mostrar todos los elementos de la tabla, paginados
-obtenerTodos(router, modelo, atributos, incluye, nombreEntidad);
+obtenerTodos(router, modelo, atributosAMostrar, incluye, nombreEntidad);
 
 //Crear registro con los valores del cuerpo de la petición
-router.post("/", validarToken, async (req, res) => {
-  try {
-    const alumno = await models.alumno.create({
-      dni: req.body.dni,
-      nombre: req.body.nombre,
-      apellido: req.body.apellido,
-      fecha_nac: req.body.fecha_nac,
-      id_carrera: req.body.id_carrera
-    });
-
-    res.status(201).send({ estado: 'Éxito al crear alumno', id: alumno.id });
-    logger.info('Éxito al registrar alumno.', loggerMeta(req, res));
-  } catch (error) {
-    if (error == "SequelizeUniqueConstraintError: Validation error") {
-      res.status(400).send('Bad request: existe otro alumno con el mismo dni')
-    }
-    else {
-      res.sendStatus(500)
-    }
-    logger.error(`${error}`, loggerMeta(req, res));
-  }
-});
+crearNuevo(router, modelo, camposACrear, nombreEntidad);
 
 //Búsqueda por id
 const findAlumno = (id) => {
@@ -66,7 +46,7 @@ const findAlumno = (id) => {
 };
 
 //Obtener por id
-obtenerPorId(router, modelo, atributos, incluye, nombreEntidad);
+obtenerPorId(router, modelo, atributosAMostrar, incluye, nombreEntidad);
 
 //Actualizar, requiere id
 router.put("/:id", validarToken, async (req, res) => {
@@ -91,6 +71,6 @@ router.put("/:id", validarToken, async (req, res) => {
 });
 
 //Borrar, requiere id
-borrarPorId(router, modelo, atributos, incluye, nombreEntidad)
+borrarPorId(router, modelo, atributosAMostrar, incluye, nombreEntidad)
 
 module.exports = router;

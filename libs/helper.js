@@ -53,45 +53,54 @@ const obtenerTodos = (router, modelo, atributos, incluye, nombreEntidad) => {
     }
   });
 }
-/**
+
 //Crear registro con los valores del cuerpo de la petición
 const crearNuevo = (router, modelo, campos, nombreEntidad) => {
-
-  camposExtraidos = {};
-
   router.post("/", validarToken, async (req, res) => {
-
-    for (let i = 1; i < campos.length; i++) {
-      camposExtraidos[campos[i]] = req.body.campos[i];
-    }
-
     try {
+      //Crea el objeto que contendrá los campos para el método create
+      const camposACrear = {};
+      /*
+      Itera tanta cantidad de veces como 'campos' haya para definir los
+      pares clave: valor que contendrá 'camposACrear'.
+      Primero comprueba que la clave tomada del cuerpo de la petición coincida
+      con la clave esperada según se determina en el código.
+      Luego, agrega el par: La clave será tomada de 'campos' y se le asigna su correspondiente valor
+      tomado del cuerpo de la petición (req.body).
+      Así, por ejemplo a partir de:
+      array = ["dni", "nombre", "apellido"]
+      resulta:
+      camposACrear = {
+        dni: req.body.dni,
+        nombre: req.body.nombre,
+        apellido: req.body.apellido
+      }
+      */
+      for (var i = 0; i < campos.length; i++) {
+        if (campos[i] != Object.keys(req.body)[i]) {
+          throw new Error('Ingrese los campos correctos')
+        }
+        camposACrear[campos[i]] = Object.values(req.body)[i]
+      }
+      //Crear el nuevo registro
       const entidad = await modelo.create(
-        camposExtraidos
-        /**
-        const { dni, nombre, apellido, fecha_nac, id_carrera } = req.body;
-        { dni,
-        nombre,
-        apellido,
-        fecha_nac,
-        id_carrera }
-         *//**
-);
+        camposACrear
+      );
 
-res.status(201).send({ estado: `Éxito al crear ${nombreEntidad}`, id: entidad.id });
-logger.info(`Éxito al registrar ${nombreEntidad}.`, loggerMeta(req, res));
-} catch (error) {
-if (error == "SequelizeUniqueConstraintError: Validation error") {
-res.status(400).send('Bad request: Ya existe en la base de datos.')
+      res.status(201).send({ estado: `Éxito al crear ${nombreEntidad}`, id: entidad.id });
+      logger.info(`Éxito al registrar ${nombreEntidad}.`, loggerMeta(req, res));
+    } catch (error) {
+      //Revisar si se puede usar responderAError acá
+      if (error == "SequelizeUniqueConstraintError: Validation error") {
+        res.status(400).send('Bad request: Ya existe en la base de datos.')
+      }
+      else {
+        res.sendStatus(500)
+      }
+      logger.error(`${error}`, loggerMeta(req, res));
+    }
+  });
 }
-else {
-res.sendStatus(500)
-}
-logger.error(`${error}`, loggerMeta(req, res));
-}
-});
-}
-
 
 //Búsqueda de una entidad por id
 const buscarEntidad = async (modelo, atributos, incluye, id, nombreEntidad) => {
@@ -135,7 +144,7 @@ const obtenerPorId = async (router, modelo, atributos, incluye, nombreEntidad) =
 router.put("/:id", validarToken, async (req, res) => {
   try {
     const alumno = await findAlumno(req.params.id);
-
+ 
     await alumno.update({
       dni: req.body.dni,
       nombre: req.body.nombre,
@@ -145,7 +154,7 @@ router.put("/:id", validarToken, async (req, res) => {
     }, {
       fields: ["dni", "nombre", "apellido", "fecha_nac", "id_carrera"]
     });
-
+ 
     res.status(200).json({ estado: 'Éxito al actualizar alumno.', alumnoActualizado: alumno });
     logger.info('Éxito al actualizar alumno.', loggerMeta(req, res));
   } catch (error) {
@@ -171,4 +180,4 @@ const borrarPorId = async (router, modelo, atributos, incluye, nombreEntidad) =>
   });
 }
 
-module.exports = { buscarEntidad, responderAlError, obtenerTodos, obtenerPorId, borrarPorId }
+module.exports = { buscarEntidad, responderAlError, obtenerTodos, crearNuevo, obtenerPorId, borrarPorId }
