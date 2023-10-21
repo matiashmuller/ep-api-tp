@@ -3,64 +3,23 @@ var router = express.Router();
 var models = require("../models");
 const validarToken = require('../libs/validarToken');
 const { logger, loggerMeta } = require('../libs/logger');
-const { buscarEntidad, responderAlError } = require('../libs/helper');
+const { buscarEntidad, responderAlError, obtenerTodos, obtenerPorId, borrarPorId } = require('../libs/helper');
 
+const modelo = models.alumno
+const atributos = ["id", "dni", "nombre", "apellido", "fecha_nac"]
+const incluye = [{
+  as: 'carreraQueEstudia',
+  model: models.carrera,
+  attributes: ["nombre"]
+}, {
+  as: 'materiasQueCursa',
+  model: models.materia,
+  attributes: ["nombre", "carga_horaria"],
+  through: { attributes: ["id"] }
+}]
+const nombreEntidad = 'alumno'
 //Mostrar todos los elementos de la tabla, paginados
-router.get("/", validarToken, async (req, res) => {
-  try {
-    /*
-    Toma de parámetros para paginación:
-    Toma los valores pagina y cantPorPag pasados como parámetros, los parsea
-    a Int y luego comprueba: si algún valor de los pasados fuera aún inválido
-    (<=0 o no-número), asigna uno válido por defecto (1 y 5 respectivamente).
-    */
-    let pagina = parseInt(req.query.pagina);
-    let cantPorPag = parseInt(req.query.cantPorPag);
-
-    pagina = isNaN(pagina) || pagina <= 0 ? 1 : pagina;
-    cantPorPag = isNaN(cantPorPag) || cantPorPag <= 0 ? 5 : cantPorPag;
-
-    const resp = await models.alumno.findAndCountAll({
-      attributes: ["id", "dni", "nombre", "apellido", "fecha_nac"],
-      //Asocicación
-      include: [{
-        as: 'carreraQueEstudia',
-        model: models.carrera,
-        attributes: ["nombre"]
-      }, {
-        as: 'materiasQueCursa',
-        model: models.materia,
-        attributes: ["nombre", "carga_horaria"],
-        through: { attributes: ["id"] }
-      }],
-      /*
-      Paginación: Se muestran cantPorPag (5 por defecto) elementos por página,
-      a partir de la página actual. Por defecto considera la página 1 como la primera.
-      Ejemplo:
-        Página 1 → Elementos 1 al 5
-        Pagina 2 → Elementos 6 al 10
-      */
-      limit: cantPorPag,
-      offset: (pagina - 1) * (cantPorPag),
-      distinct: true
-    });
-    //Loguea y manda respuesta de éxito
-    const totalElementos = resp.count;
-    const alumnos = resp.rows;
-    const totalPaginas = Math.ceil(totalElementos / cantPorPag);
-
-    res.send({
-      totalElementos,
-      totalPaginas,
-      paginaNro: pagina,
-      alumnos
-    });
-    logger.info('Éxito al mostrar alumno.', loggerMeta(req, res));
-  } catch (error) {
-    res.sendStatus(500)
-    logger.error(`${error}`, loggerMeta(req, res));
-  }
-});
+obtenerTodos(router, modelo, atributos, incluye, nombreEntidad);
 
 //Crear registro con los valores del cuerpo de la petición
 router.post("/", validarToken, async (req, res) => {
@@ -107,15 +66,7 @@ const findAlumno = (id) => {
 };
 
 //Obtener por id
-router.get("/:id", validarToken, async (req, res) => {
-  try {
-    const alumno = await findAlumno(req.params.id);
-    res.json(alumno);
-    logger.info('Éxito al mostrar alumno.', loggerMeta(req, res));
-  } catch (error) {
-    responderAlError(error, req, res, req.params.id, 'Alumno');
-  }
-});
+obtenerPorId(router, modelo, atributos, incluye, nombreEntidad);
 
 //Actualizar, requiere id
 router.put("/:id", validarToken, async (req, res) => {
@@ -140,18 +91,6 @@ router.put("/:id", validarToken, async (req, res) => {
 });
 
 //Borrar, requiere id
-router.delete("/:id", validarToken, async (req, res) => {
-  try {
-    const alumno = await findAlumno(req.params.id);
-
-    await alumno.destroy();
-
-    res.status(200).send('Éxito al eliminar alumno.');
-    logger.info('Éxito al eliminar alumno.', loggerMeta(req, res));
-
-  } catch (error) {
-    responderAlError(error, req, res, req.params.id, 'Alumno');
-  }
-});
+borrarPorId(router, modelo, atributos, incluye, nombreEntidad)
 
 module.exports = router;
