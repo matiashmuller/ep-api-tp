@@ -28,5 +28,4 @@ module.exports = function validarToken(req, res, next) {
         res.status(401).json('Error de validación: Token inválido o inexistente.');
         logger.error(`${error}`, loggerMeta(req, res));
     }
-
 };

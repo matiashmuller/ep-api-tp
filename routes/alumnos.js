@@ -4,6 +4,7 @@ var models = require("../models");
 const validarToken = require('../libs/validarToken');
 const { logger, loggerMeta } = require('../libs/logger');
 
+//Mostrar todos los elementos de la tabla, paginados
 router.get("/", validarToken, async (req, res) => {
   try {
     /*
@@ -60,6 +61,7 @@ router.get("/", validarToken, async (req, res) => {
   }
 });
 
+//Crear con los valores del cuerpo de la petición
 router.post("/", validarToken, async (req, res) => {
   try {
     const alumno = await models.alumno.create({
@@ -83,6 +85,7 @@ router.post("/", validarToken, async (req, res) => {
   }
 });
 
+//Búsqueda por id
 const findAlumno = async (id) => {
   const alumno = await models.alumno.findOne({
     attributes: ["id", "dni", "nombre", "apellido", "fecha_nac"],
@@ -105,23 +108,28 @@ const findAlumno = async (id) => {
   return alumno;
 };
 
-//hacer 'error catcher?'
+//Respuesta a error parametrizada para métodos que incluyen una búsqueda
+const responderAlError = (error, req, res, id) => {
+  if (error.message == 'Alumno no encontrado.') {
+    res.status(404).send(`Error: Alumno con id ${id} no encontrado.`);
+  } else {
+    res.sendStatus(500)
+  }
+  logger.error(`${error}`, loggerMeta(req, res));
+}
 
+//Obtener por id
 router.get("/:id", validarToken, async (req, res) => {
   try {
     const alumno = await findAlumno(req.params.id);
     res.json(alumno);
     logger.info('Éxito al mostrar alumno.', loggerMeta(req, res));
   } catch (error) {
-    if (error.message == 'Alumno no encontrado.') {
-      res.status(404).send(`Error: Alumno con id ${req.params.id} no encontrado.`);
-    } else {
-      res.sendStatus(500)
-    }
-    logger.error(`${error}`, loggerMeta(req, res));
+    responderAlError(error,req,res,req.params.id);
   }
 });
 
+//Actualizar, requiere id
 router.put("/:id", validarToken, async (req, res) => {
   try {
     const alumno = await findAlumno(req.params.id);
@@ -139,15 +147,11 @@ router.put("/:id", validarToken, async (req, res) => {
     res.status(200).json({ estado: 'Éxito al actualizar alumno.', alumnoActualizado: alumno });
     logger.info('Éxito al actualizar alumno.', loggerMeta(req, res));
   } catch (error) {
-    if (error.message == 'Alumno no encontrado.') {
-      res.status(404).send(`Error: Alumno con id ${req.params.id} no encontrado.`);
-    } else {
-      res.sendStatus(500)
-    }
-    logger.error(`${error}`, loggerMeta(req, res));
+    responderAlError(error,req,res,req.params.id);
   }
 });
 
+//Borrar, requiere id
 router.delete("/:id", validarToken, async (req, res) => {
   try {
     const alumno = await findAlumno(req.params.id);
@@ -158,12 +162,7 @@ router.delete("/:id", validarToken, async (req, res) => {
     logger.info('Éxito al eliminar alumno.', loggerMeta(req, res));
 
   } catch (error) {
-    if (error.message == 'Alumno no encontrado.') {
-      res.status(404).send(`Error: Alumno con id ${req.params.id} no encontrado.`);
-    } else {
-      res.sendStatus(500)
-    }
-    logger.error(`${error}`, loggerMeta(req, res));
+    responderAlError(error,req,res,req.params.id);
   }
 });
 
