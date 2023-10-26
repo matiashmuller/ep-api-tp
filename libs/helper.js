@@ -3,9 +3,39 @@ const validarToken = require("./validarToken");
 
 //Funciones auxiliares parametrizadas para importar y evitar tanta repetición en las rutas
 
-//------------------------------------------------------------------------------------------------------------
+//Respuesta a errores con log a consola y bd
+const responderAlError = (error, req, res, id, nombreEntidad) => {
+  if (error == "SequelizeUniqueConstraintError: Validation error") {
+    res.status(400).send('Bad request: Ya existe en la base de datos.')
+  } else if (error.message == `${nombreEntidad} no encontrado.`) {
+    res.status(404).send(`Error: ${nombreEntidad} con id ${id} no encontrado.`);
+  } else {
+    res.sendStatus(500)
+  }
+  logger.error(`${error}`, loggerMeta(req, res));
+}
+
+/*
+Búsqueda de entidad por id: recibe un modelo a buscar, sus atributos, relaciones a incluir,
+un id, y un nombre para la entidad
+*/
+const buscarEntidad = async (modelo, atributosABuscar, incluye, id, nombreEntidad) => {
+  const entidad = await modelo.findOne({
+    attributes: atributosABuscar,
+    //Asocicación
+    include: incluye,
+    where: { id }
+  });
+  if (!entidad) {
+    throw new Error(`${nombreEntidad} no encontrado.`)
+  }
+  return entidad;
+};
+
+//-------------------Métodos GET, POST, PUT, DELETE----------------------------------------------------------------------
+
 //Mostrar todos los elementos de la tabla, paginados
-const obtenerTodos = (router, modelo, atributos, incluye, nombreEntidad) => {
+const obtenerTodos = (router, modelo, atributosAMostrar, incluye, nombreEntidad) => {
   router.get("/", validarToken, async (req, res) => {
     try {
       /*
@@ -21,7 +51,7 @@ const obtenerTodos = (router, modelo, atributos, incluye, nombreEntidad) => {
       cantPorPag = isNaN(cantPorPag) || cantPorPag <= 0 ? 5 : cantPorPag;
 
       const resp = await modelo.findAndCountAll({
-        attributes: atributos,
+        attributes: atributosAMostrar,
         //Asocicación
         include: incluye,
         /*
@@ -48,89 +78,16 @@ const obtenerTodos = (router, modelo, atributos, incluye, nombreEntidad) => {
       });
       logger.info(`Éxito al mostrar ${nombreEntidad}.`, loggerMeta(req, res));
     } catch (error) {
-      res.sendStatus(500)
-      logger.error(`${error}`, loggerMeta(req, res));
+      responderAlError(error, req, res, 1, nombreEntidad);
     }
   });
-}
-
-//Crear registro con los valores del cuerpo de la petición
-const crearNuevo = (router, modelo, campos, nombreEntidad) => {
-  router.post("/", validarToken, async (req, res) => {
-    try {
-      //Crea el objeto que contendrá los campos para el método create
-      const camposACrear = {};
-      /*
-      Itera tanta cantidad de veces como 'campos' haya para definir los
-      pares clave: valor que contendrá 'camposACrear'.
-      Primero comprueba que la clave tomada del cuerpo de la petición coincida
-      con la clave esperada según se determina en el código.
-      Luego, agrega el par: La clave será tomada de 'campos' y se le asigna su correspondiente valor
-      tomado del cuerpo de la petición (req.body).
-      Así, por ejemplo a partir de:
-      array = ["dni", "nombre", "apellido"]
-      resulta:
-      camposACrear = {
-        dni: req.body.dni,
-        nombre: req.body.nombre,
-        apellido: req.body.apellido
-      }
-      */
-      for (var i = 0; i < campos.length; i++) {
-        if (campos[i] != Object.keys(req.body)[i]) {
-          throw new Error('Ingrese los campos correctos')
-        }
-        camposACrear[campos[i]] = Object.values(req.body)[i]
-      }
-      //Crear el nuevo registro
-      const entidad = await modelo.create(
-        camposACrear
-      );
-
-      res.status(201).send({ estado: `Éxito al crear ${nombreEntidad}`, id: entidad.id });
-      logger.info(`Éxito al registrar ${nombreEntidad}.`, loggerMeta(req, res));
-    } catch (error) {
-      //Revisar si se puede usar responderAError acá
-      if (error == "SequelizeUniqueConstraintError: Validation error") {
-        res.status(400).send('Bad request: Ya existe en la base de datos.')
-      }
-      else {
-        res.sendStatus(500)
-      }
-      logger.error(`${error}`, loggerMeta(req, res));
-    }
-  });
-}
-
-//Búsqueda de una entidad por id
-const buscarEntidad = async (modelo, atributos, incluye, id, nombreEntidad) => {
-  const entidad = await modelo.findOne({
-    attributes: atributos,
-    //Asocicación
-    include: incluye,
-    where: { id }
-  });
-  if (!entidad) {
-    throw new Error(`${nombreEntidad} no encontrado.`)
-  }
-  return entidad;
-};
-
-//Respuesta a error para métodos que incluyen una búsqueda
-const responderAlError = (error, req, res, id, nombreEntidad) => {
-  if (error.message == `${nombreEntidad} no encontrado.`) {
-    res.status(404).send(`Error: ${nombreEntidad} con id ${id} no encontrado.`);
-  } else {
-    res.sendStatus(500)
-  }
-  logger.error(`${error}`, loggerMeta(req, res));
 }
 
 //Obtener por id
-const obtenerPorId = async (router, modelo, atributos, incluye, nombreEntidad) => {
+const obtenerPorId = async (router, modelo, atributosABuscar, incluye, nombreEntidad) => {
   router.get("/:id", validarToken, async (req, res) => {
     try {
-      const entidad = await buscarEntidad(modelo, atributos, incluye, req.params.id, nombreEntidad);
+      const entidad = await buscarEntidad(modelo, atributosABuscar, incluye, req.params.id, nombreEntidad);
       res.json(entidad);
       logger.info(`Éxito al mostrar ${nombreEntidad}.`, loggerMeta(req, res));
     } catch (error) {
@@ -139,45 +96,82 @@ const obtenerPorId = async (router, modelo, atributos, incluye, nombreEntidad) =
   });
 }
 
-/**
-//Actualizar, requiere id
-router.put("/:id", validarToken, async (req, res) => {
-  try {
-    const alumno = await findAlumno(req.params.id);
- 
-    await alumno.update({
-      dni: req.body.dni,
-      nombre: req.body.nombre,
-      apellido: req.body.apellido,
-      fecha_nac: req.body.fecha_nac,
-      id_carrera: req.body.id_carrera
-    }, {
-      fields: ["dni", "nombre", "apellido", "fecha_nac", "id_carrera"]
-    });
- 
-    res.status(200).json({ estado: 'Éxito al actualizar alumno.', alumnoActualizado: alumno });
-    logger.info('Éxito al actualizar alumno.', loggerMeta(req, res));
-  } catch (error) {
-    responderAlError(error, req, res, req.params.id, 'Alumno');
-  }
-});
- */
-
-//Borrar, requiere id
-const borrarPorId = async (router, modelo, atributos, incluye, nombreEntidad) => {
-  router.delete("/:id", validarToken, async (req, res) => {
+//Crear registro con los valores del cuerpo de la petición
+const crearNuevo = (router, modelo, atributosACrear, nombreEntidad) => {
+  router.post("/", validarToken, async (req, res) => {
     try {
-      const entidad = await buscarEntidad(modelo, atributos, incluye, req.params.id, nombreEntidad);
+      /*
+      Itera tanta cantidad de veces como elementos en el array 'atributosACrear' haya 
+      para comprobar que los atributos ingresados en el cuerpo de la solicitud 
+      son los correctos. Es decir, que coinciden con los establecidos en el 
+      código y en el registro de la entidad en la base de datos.
+      */
+      for (var i = 0; i < atributosACrear.length; i++) {
+        if (atributosACrear[i] != Object.keys(req.body)[i]) {
+          throw new Error('Atributos ingresados incorrectos.')
+        }
+      }
+      /*
+      Crea el nuevo registro a partir de los atributos y valores ingresados
+      en el cuerpo de la solicitud
+      */
+      const entidad = await modelo.create(
+        req.body
+      );
+      //Envía respuesta de creado, y loggea a consola y bd
+      res.status(201).send({ estado: `Éxito al crear ${nombreEntidad}`, id: entidad.id });
+      logger.info(`Éxito al registrar ${nombreEntidad}.`, loggerMeta(req, res));
+    } catch (error) {
+      responderAlError(error, req, res, 1, nombreEntidad);
+    }
+  });
+}
 
-      await entidad.destroy();
 
-      res.status(200).send(`Éxito al eliminar ${nombreEntidad}.`);
-      logger.info(`Éxito al eliminar ${nombreEntidad}.`, loggerMeta(req, res));
-
+//Actualizar, requiere id
+const actualizarPorId = async (router, modelo, atributosABuscar, atributosAActualiazr, incluye, nombreEntidad) => {
+  router.put("/:id", validarToken, async (req, res) => {
+    try {
+      /*
+      Hace una comprobación similar a la del método .put para comprobar que
+      los atributos ingresados para actualizar el registro son los correctos
+      */
+      for (var i = 0; i < atributosAActualiazr.length; i++) {
+        if (atributosAActualiazr[i] != Object.keys(req.body)[i]) {
+          throw new Error('Atributos ingresados incorrectos.')
+        }
+      }
+      //Busca la entidad a actualizar
+      const entidad = await buscarEntidad(modelo, atributosABuscar, incluye, req.params.id, nombreEntidad);
+      //Actualiza los valores de los atributos de la entidad con los del cuerpo de la petición
+      await entidad.update(
+        req.body, {
+        fields: atributosAActualiazr
+      });
+      //Envía respuesta de éxito y loguea a consola y bd
+      res.status(200).json({ estado: `Éxito al actualizar ${nombreEntidad}`, actualizado: entidad });
+      logger.info(`Éxito al actualizar ${nombreEntidad}`, loggerMeta(req, res));
     } catch (error) {
       responderAlError(error, req, res, req.params.id, nombreEntidad);
     }
   });
 }
 
-module.exports = { buscarEntidad, responderAlError, obtenerTodos, crearNuevo, obtenerPorId, borrarPorId }
+//Borrar, requiere id
+const borrarPorId = async (router, modelo, atributos, incluye, nombreEntidad) => {
+  router.delete("/:id", validarToken, async (req, res) => {
+    try {
+      //Busca la entidad a borrar
+      const entidad = await buscarEntidad(modelo, atributos, incluye, req.params.id, nombreEntidad);
+      //Borra la entidad
+      await entidad.destroy();
+      //Envía respuesta de éxito y loguea a consola y bd
+      res.status(200).send(`Éxito al eliminar ${nombreEntidad}.`);
+      logger.info(`Éxito al eliminar ${nombreEntidad}.`, loggerMeta(req, res));
+    } catch (error) {
+      responderAlError(error, req, res, req.params.id, nombreEntidad);
+    }
+  });
+}
+
+module.exports = { obtenerTodos, obtenerPorId, crearNuevo, actualizarPorId, borrarPorId }
