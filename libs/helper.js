@@ -1,7 +1,7 @@
 const { logger, loggerMeta } = require("./logger");
 const validarToken = require("./validarToken");
 
-//Funciones auxiliares parametrizadas para importar y evitar tanta repetición en las rutas
+//Funciones auxiliares
 
 //Respuesta a errores con log a consola y bd
 const responderAlError = (error, req, res, id, nombreEntidad) => {
@@ -31,6 +31,24 @@ const buscarEntidad = async (modelo, atributosABuscar, incluye, id, nombreEntida
   }
   return entidad;
 };
+/*
+Primero comprueba que las keys del cuerpo de la petición tienen la misma cantidad de
+elementos que el array 'atributosAComprobar'.
+Luego itera tanta cantidad de veces como elementos en el array 'atributosAComprobar' haya 
+para comprobar que los atributos ingresados en el cuerpo de la solicitud 
+son los correctos. Es decir, que coinciden con los establecidos en el 
+código y en el registro de la entidad en la base de datos.
+*/
+const comprobarAtributos = (atributosAComprobar, req) => {
+  if (atributosAComprobar.length != Object.keys(req.body).length) {
+    throw new Error('Atributos ingresados incorrectos.')
+  }
+  for (var i = 0; i < atributosAComprobar.length; i++) {
+    if (atributosAComprobar[i] != Object.keys(req.body)[i]) {
+      throw new Error('Atributos ingresados incorrectos.')
+    }
+  }
+}
 
 //-------------------Métodos GET, POST, PUT, DELETE----------------------------------------------------------------------
 
@@ -100,17 +118,8 @@ const obtenerPorId = async (router, modelo, atributosABuscar, incluye, nombreEnt
 const crearNuevo = (router, modelo, atributosACrear, nombreEntidad) => {
   router.post("/", validarToken, async (req, res) => {
     try {
-      /*
-      Itera tanta cantidad de veces como elementos en el array 'atributosACrear' haya 
-      para comprobar que los atributos ingresados en el cuerpo de la solicitud 
-      son los correctos. Es decir, que coinciden con los establecidos en el 
-      código y en el registro de la entidad en la base de datos.
-      */
-      for (var i = 0; i < atributosACrear.length; i++) {
-        if (atributosACrear[i] != Object.keys(req.body)[i]) {
-          throw new Error('Atributos ingresados incorrectos.')
-        }
-      }
+      //Comprueba validez de atributos ingresados en el cuerpo de la petición
+      comprobarAtributos(atributosACrear, req)
       /*
       Crea el nuevo registro a partir de los atributos y valores ingresados
       en el cuerpo de la solicitud
@@ -127,20 +136,12 @@ const crearNuevo = (router, modelo, atributosACrear, nombreEntidad) => {
   });
 }
 
-
 //Actualizar, requiere id
 const actualizarPorId = async (router, modelo, atributosABuscar, atributosAActualizar, incluye, nombreEntidad) => {
   router.put("/:id", validarToken, async (req, res) => {
     try {
-      /*
-      Hace una comprobación similar a la del método .put para comprobar que
-      los atributos ingresados para actualizar el registro son los correctos
-      */
-      for (var i = 0; i < atributosAActualizar.length; i++) {
-        if (atributosAActualizar[i] != Object.keys(req.body)[i]) {
-          throw new Error('Atributos ingresados incorrectos.')
-        }
-      }
+      //Comprueba validez de atributos ingresados en el cuerpo de la petición
+      comprobarAtributos(atributosAActualizar, req)
       //Busca la entidad a actualizar
       const entidad = await buscarEntidad(modelo, atributosABuscar, incluye, req.params.id, nombreEntidad);
       //Actualiza los valores de los atributos de la entidad con los del cuerpo de la petición
