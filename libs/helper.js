@@ -67,14 +67,14 @@ const obtenerTodos = (router, modelo, atributosAMostrar, incluye, nombreEntidad)
       });
       //Loguea y manda respuesta de éxito
       const totalElementos = resp.count;
-      const filas = resp.rows;
+      const elementos = resp.rows;
       const totalPaginas = Math.ceil(totalElementos / cantPorPag);
 
       res.send({
         totalElementos,
         totalPaginas,
         paginaNro: pagina,
-        filas
+        elementos
       });
       logger.info(`Éxito al mostrar ${nombreEntidad}.`, loggerMeta(req, res));
     } catch (error) {
@@ -129,15 +129,15 @@ const crearNuevo = (router, modelo, atributosACrear, nombreEntidad) => {
 
 
 //Actualizar, requiere id
-const actualizarPorId = async (router, modelo, atributosABuscar, atributosAActualiazr, incluye, nombreEntidad) => {
+const actualizarPorId = async (router, modelo, atributosABuscar, atributosAActualizar, incluye, nombreEntidad) => {
   router.put("/:id", validarToken, async (req, res) => {
     try {
       /*
       Hace una comprobación similar a la del método .put para comprobar que
       los atributos ingresados para actualizar el registro son los correctos
       */
-      for (var i = 0; i < atributosAActualiazr.length; i++) {
-        if (atributosAActualiazr[i] != Object.keys(req.body)[i]) {
+      for (var i = 0; i < atributosAActualizar.length; i++) {
+        if (atributosAActualizar[i] != Object.keys(req.body)[i]) {
           throw new Error('Atributos ingresados incorrectos.')
         }
       }
@@ -146,7 +146,7 @@ const actualizarPorId = async (router, modelo, atributosABuscar, atributosAActua
       //Actualiza los valores de los atributos de la entidad con los del cuerpo de la petición
       await entidad.update(
         req.body, {
-        fields: atributosAActualiazr
+        fields: atributosAActualizar
       });
       //Envía respuesta de éxito y loguea a consola y bd
       res.status(200).json({ estado: `Éxito al actualizar ${nombreEntidad}`, actualizado: entidad });
