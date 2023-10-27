@@ -25,8 +25,8 @@ obtenerPorId(router, modelo, atributosABuscarYMostrar, relacionesAIncluir, nombr
 //Crear registro con los valores del cuerpo de la petición
 crearNuevo(router, modelo, atributosACrearOActualizar, nombreEntidad);
 //Actualizar por id
-actualizarPorId(router,modelo,atributosABuscarYMostrar,atributosACrearOActualizar,relacionesAIncluir,nombreEntidad);
-//Borrar, requiere id
+actualizarPorId(router, modelo, atributosABuscarYMostrar, atributosACrearOActualizar, relacionesAIncluir, nombreEntidad);
+//Borrar por id
 borrarPorId(router, modelo, atributosABuscarYMostrar, relacionesAIncluir, nombreEntidad);
 
 module.exports = router;

@@ -26,7 +26,7 @@ obtenerPorId(router, modelo, atributosABuscarYMostrar, relacionesAIncluir, nombr
 crearNuevo(router, modelo, atributosACrearOActualizar, nombreEntidad);
 //Actualizar por id
 actualizarPorId(router, modelo, atributosABuscarYMostrar, atributosACrearOActualizar, relacionesAIncluir, nombreEntidad);
-//Borrar, requiere id
+//Borrar por id
 borrarPorId(router, modelo, atributosABuscarYMostrar, relacionesAIncluir, nombreEntidad);
 
 module.exports = router;
