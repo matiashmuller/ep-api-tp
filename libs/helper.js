@@ -53,7 +53,7 @@ const comprobarAtributos = (atributosAComprobar, req) => {
 //-------------------Métodos GET, POST, PUT, DELETE----------------------------------------------------------------------
 
 //Mostrar todos los elementos de la tabla, paginados
-const obtenerTodos = (router, modelo, atributosAMostrar, incluye, nombreEntidad, noEsTablaUnion= true) => {
+const obtenerTodos = (router, modelo, atributosAMostrar, incluye, nombreEntidad, noEsTablaUnion = true) => {
   router.get("/", validarToken, async (req, res) => {
     try {
       /*
@@ -139,13 +139,13 @@ const crearNuevo = (router, modelo, atributosACrear, nombreEntidad) => {
 }
 
 //Actualizar, requiere id
-const actualizarPorId = async (router, modelo, atributosABuscar, atributosAActualizar, incluye, nombreEntidad) => {
+const actualizarPorId = async (router, modelo, atributosAActualizar, nombreEntidad) => {
   router.put("/:id", validarToken, async (req, res) => {
     try {
       //Comprueba validez de atributos ingresados en el cuerpo de la petición
       comprobarAtributos(atributosAActualizar, req)
       //Busca la entidad a actualizar
-      const entidad = await buscarEntidad(modelo, atributosABuscar, incluye, req.params.id, nombreEntidad);
+      const entidad = await modelo.findOne({ where: { id: req.params.id } });
       //Actualiza los valores de los atributos de la entidad con los del cuerpo de la petición
       await entidad.update(
         req.body, {
@@ -161,11 +161,11 @@ const actualizarPorId = async (router, modelo, atributosABuscar, atributosAActua
 }
 
 //Borrar, requiere id
-const borrarPorId = async (router, modelo, atributos, incluye, nombreEntidad) => {
+const borrarPorId = async (router, modelo, nombreEntidad) => {
   router.delete("/:id", validarToken, async (req, res) => {
     try {
       //Busca la entidad a borrar
-      const entidad = await buscarEntidad(modelo, atributos, incluye, req.params.id, nombreEntidad);
+      const entidad = await modelo.findOne({ where: { id: req.params.id } });
       //Borra la entidad
       await entidad.destroy();
       //Envía respuesta de éxito y loguea a consola y bd

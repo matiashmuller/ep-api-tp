@@ -4,8 +4,6 @@ var models = require("../models");
 const { obtenerTodos, obtenerPorId, borrarPorId, crearNuevo, actualizarPorId } = require('../libs/helper');
 
 const modelo = models.alumno_materia
-//Se incluyen todos los campos para la búsqueda necesaria en el borrado de un registro
-const atributosParaEliminar = ["id", "id_alumno", "id_materia"]
 //No se incluyen foreign keys para mostrar un respuesta más prolija
 const atributosABuscarYMostrar = ["id"]
 const atributosACrearOActualizar = ["id_alumno", "id_materia"]
@@ -26,8 +24,8 @@ obtenerPorId(router, modelo, atributosABuscarYMostrar, relacionesAIncluir, nombr
 //Crear registro con los valores del cuerpo de la petición
 crearNuevo(router, modelo, atributosACrearOActualizar, nombreEntidad);
 //Actualizar por id
-actualizarPorId(router, modelo, atributosABuscarYMostrar, atributosACrearOActualizar, relacionesAIncluir, nombreEntidad);
+actualizarPorId(router, modelo, atributosACrearOActualizar, nombreEntidad);
 //Borrar por id
-borrarPorId(router, modelo, atributosParaEliminar, relacionesAIncluir, nombreEntidad);
+borrarPorId(router, modelo, nombreEntidad);
 
 module.exports = router;
