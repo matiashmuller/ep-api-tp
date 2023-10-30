@@ -1,147 +1,33 @@
 var express = require("express");
 var router = express.Router();
 var models = require("../models");
-const validarToken = require('../libs/validarToken');
-const { logger, loggerMeta } = require('../libs/logger');
+const { obtenerTodos, obtenerPorId, borrarPorId, crearNuevo, actualizarPorId } = require('../libs/helper');
 
-router.get("/", validarToken, (req, res) => {
-  /*
-  Toma de parámetros para paginación:
-  Toma los valores pagina y cantPorPag pasados como parámetros, los parsea
-  a Int y luego comprueba: si algún valor de los pasados fuera aún inválido
-  (<=0 o no-número), asigna uno válido por defecto (1 y 5 respectivamente).
-  */
-  let pagina = parseInt(req.query.pagina);
-  let cantPorPag = parseInt(req.query.cantPorPag);
+const modelo = models.alumno_materia
+//Se incluyen todos los campos para la búsqueda necesaria en el borrado de un registro
+const atributosParaEliminar = ["id", "id_alumno", "id_materia"]
+//No se incluyen foreign keys para mostrar un respuesta más prolija
+const atributosABuscarYMostrar = ["id"]
+const atributosACrearOActualizar = ["id_alumno", "id_materia"]
+const relacionesAIncluir = [{
+  model: models.alumno,
+  attributes: ['id', "nombre", "apellido"]
+}, {
+  as: 'materia',
+  model: models.materia,
+  attributes: ['id', "nombre"]
+}]
+const nombreEntidad = 'alumno_materia'
 
-  pagina = isNaN(pagina) || pagina <= 0 ? 1 : pagina;
-  cantPorPag = isNaN(cantPorPag) || cantPorPag <= 0 ? 5 : cantPorPag;
-
-  models.alumno_materia.findAndCountAll({
-    attributes: ["id"],
-    //Asocicación
-    include: [
-      {
-        model: models.alumno,
-        attributes: ['id', "nombre", "apellido"]
-      },
-      {
-        as: 'materia',
-        model: models.materia,
-        attributes: ['id', "nombre"]
-      }
-    ],
-    /*
-    Paginación: Se muestran cantPorPag (5 por defecto) elementos por página,
-    a partir de la página actual. Por defecto considera la página 1 como la primera.
-    Ejemplo:
-      Página 1 → Elementos 1 al 5
-      Pagina 2 → Elementos 6 al 10
-    */
-    limit: cantPorPag,
-    offset: (pagina - 1) * (cantPorPag)
-  }).then(resp => {
-    const totalElementos = resp.count;
-    const alumnos_materias = resp.rows;
-    const totalPaginas = Math.ceil(totalElementos / cantPorPag);
-    //Loguea y manda respuesta de éxito
-    logger.info('Éxito al mostrar alumno_materia.', loggerMeta(req, res));
-    res.send({
-      totalElementos,
-      totalPaginas,
-      paginaNro: pagina,
-      alumnos_materias
-    })
-  }).catch(error => {
-    //Loguea y manda respuesta de error
-    logger.error('Error al mostrar alumno_materia.', loggerMeta(req, res));
-    res.status(500).send('Error al iniciar sesión.');
-  });
-});
-
-router.post("/", validarToken, (req, res) => {
-  models.alumno_materia.create({
-    id_alumno: req.body.id_alumno,
-    id_materia: req.body.id_materia
-  }).then(alumno_materia => {
-    logger.info('Éxito al registrar alumno_materia.', loggerMeta(req, res));
-    res.status(201).send({ creado: alumno_materia });
-  }).catch(error => {
-    if (error == "SequelizeUniqueConstraintError: Validation error") {
-      res.status(400).send('Bad request: ya existe en la base de datos')
-    }
-    else {
-      console.log(`Error al intentar insertar en la base de datos: ${error}`)
-      res.sendStatus(500)
-    }
-  });
-});
-
-const findAlumno_materia = (id, { onSuccess, onNotFound, onError }) => {
-  models.alumno_materia
-    .findOne({
-      attributes: ["id"],
-      //Asocicación
-      include: [
-        {
-          model: models.alumno,
-          attributes: ['id', "nombre", "apellido"]
-        },
-        {
-          as: 'materia',
-          model: models.materia,
-          attributes: ['id', "nombre"]
-        }
-      ],
-      where: { id }
-    })
-    .then(alumno_materia => (alumno_materia ? onSuccess(alumno_materia) : onNotFound()))
-    .catch(() => onError());
-};
-
-router.get("/:id", validarToken, (req, res) => {
-  findAlumno_materia(req.params.id, {
-    onSuccess: alumno_materia => res.send(alumno_materia),
-    onNotFound: () => res.sendStatus(404),
-    onError: () => res.sendStatus(500)
-  });
-});
-
-router.put("/:id", validarToken, (req, res) => {
-  const onSuccess = alumno_materia =>
-    alumno_materia
-      .update({
-        id_alumno: req.body.id_alumno,
-        id_materia: req.body.id_materia
-      }, { fields: ["id_alumno", "id_materia"] })
-      .then(() => res.sendStatus(200))
-      .catch(error => {
-        if (error == "SequelizeUniqueConstraintError: Validation error") {
-          res.status(400).send('Bad request: ya existe en la base de datos')
-        }
-        else {
-          console.log(`Error al intentar actualizar la base de datos: ${error}`)
-          res.sendStatus(500)
-        }
-      });
-  findAlumno_materia(req.params.id, {
-    onSuccess,
-    onNotFound: () => res.sendStatus(404),
-    onError: () => res.sendStatus(500)
-  });
-});
-
-router.delete("/:id", validarToken, (req, res) => {
-  const onSuccess = alumno_materia =>
-    alumno_materia
-      .destroy()
-      .then(() => res.sendStatus(200))
-      .catch(() => res.sendStatus(500));
-  findAlumno_materia(req.params.id, {
-    onSuccess,
-    onNotFound: () => res.sendStatus(404),
-    onError: () => res.sendStatus(500)
-  });
-});
+//Mostrar todos los elementos de la tabla, paginados
+obtenerTodos(router, modelo, atributosABuscarYMostrar, relacionesAIncluir, nombreEntidad, false);
+//Obtener por id
+obtenerPorId(router, modelo, atributosABuscarYMostrar, relacionesAIncluir, nombreEntidad);
+//Crear registro con los valores del cuerpo de la petición
+crearNuevo(router, modelo, atributosACrearOActualizar, nombreEntidad);
+//Actualizar por id
+actualizarPorId(router, modelo, atributosABuscarYMostrar, atributosACrearOActualizar, relacionesAIncluir, nombreEntidad);
+//Borrar por id
+borrarPorId(router, modelo, atributosParaEliminar, relacionesAIncluir, nombreEntidad);
 
 module.exports = router;

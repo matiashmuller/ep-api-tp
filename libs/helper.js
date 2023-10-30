@@ -53,7 +53,7 @@ const comprobarAtributos = (atributosAComprobar, req) => {
 //-------------------Métodos GET, POST, PUT, DELETE----------------------------------------------------------------------
 
 //Mostrar todos los elementos de la tabla, paginados
-const obtenerTodos = (router, modelo, atributosAMostrar, incluye, nombreEntidad) => {
+const obtenerTodos = (router, modelo, atributosAMostrar, incluye, nombreEntidad, noEsTablaUnion= true) => {
   router.get("/", validarToken, async (req, res) => {
     try {
       /*
@@ -81,7 +81,9 @@ const obtenerTodos = (router, modelo, atributosAMostrar, incluye, nombreEntidad)
         */
         limit: cantPorPag,
         offset: (pagina - 1) * (cantPorPag),
-        distinct: true
+        //Para contar correctamente los elementos, necesita ser true en todas las tablas, 
+        //excepto en tablas de unión, que argumentarán con false
+        distinct: noEsTablaUnion
       });
       //Loguea y manda respuesta de éxito
       const totalElementos = resp.count;
