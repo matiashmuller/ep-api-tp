@@ -23,8 +23,8 @@ obtenerTodos(router, modelo, atributosABuscarYMostrar, relacionesAIncluir, nombr
 obtenerPorId(router, modelo, atributosABuscarYMostrar, relacionesAIncluir, nombreEntidad);
 //Crear registro con los valores del cuerpo de la petición
 crearNuevo(router, modelo, atributosACrearOActualizar, nombreEntidad);
-//Actualizar por id
-actualizarPorId(router, modelo, atributosACrearOActualizar, nombreEntidad);
+//Actualizar por id - por ahora no sirve, descartar?
+//actualizarPorId(router, modelo, atributosACrearOActualizar, nombreEntidad);
 //Borrar por id
 borrarPorId(router, modelo, nombreEntidad);
 
