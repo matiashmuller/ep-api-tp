@@ -15,12 +15,18 @@ module.exports = (sequelize, DataTypes) => {
       otherKey: 'id_carrera'
     });
     //Asociación con docente - muchos a muchos a través de tabla intermedia: comision
+    materia.hasMany(models.comision, {
+      as: 'comisiones',
+      foreignKey: 'id_materia'
+    });
+    /**
     materia.belongsToMany(models.docente, {
       as: 'profQueLaDictan',
       through: models.comision,
       foreignKey: 'id_materia',
       otherKey: 'id_docente'
     });
+     */
     //Asociación con alumno - muchos a muchos a través de tabla intermedia: alumno_materia
     materia.belongsToMany(models.alumno, {
       as: 'alumnQueLaCursan',

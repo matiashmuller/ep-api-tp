@@ -12,10 +12,19 @@ const relacionesAIncluir = [{
   attributes: ["nombre"],
   through: { attributes: ["id"] }
 }, {
+  /**
   as: 'profQueLaDictan',
   model: models.docente,
   attributes: ["nombre", "apellido"],
   through: { attributes: ["letra", "dias", "turno"] }
+  */
+  as: 'comisiones',
+  model: models.comision,
+  attributes: ["letra", "dias", "turno"],
+  include: {
+    model: models.docente,
+    attributes: ['id', 'nombre', 'apellido']
+  }
 }, {
   as: 'alumnQueLaCursan',
   model: models.alumno,
