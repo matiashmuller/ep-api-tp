@@ -40,23 +40,42 @@ const loggerMeta = (req, res) => {
     }
 };
 
-//Crea el logger
-const logger = createLogger({
-    //Loguea a consola y a base de datos
-    transports: [
+//Transportes defecto para log a base de datos y consola en ambiente 'development'
+var transportesEnv = [
+    new transports.Console({
+        //Formato solo para consola
+        format: combine(
+            colorize({ all: true }),
+            timestamp({
+                format: 'YYYY-MM-DD hh:mm:ss.SSS A',
+            }),
+            align(),
+            printf((info) => `[${info.timestamp}] ${info.level}: ${info.message}`)
+        )
+    }),
+    new transpMySql(opcionesTransp)
+]
+
+//Cambia 'transportesEnv' para log a solo a consola si es ambiente de pruebas
+if (process.env.NODE_ENV === 'test') {
+    transportesEnv = [
         new transports.Console({
             //Formato solo para consola
             format: combine(
-                colorize({ all: true }),
                 timestamp({
                     format: 'YYYY-MM-DD hh:mm:ss.SSS A',
                 }),
                 align(),
-                printf((info) => `[${info.timestamp}] ${info.level}: ${info.message}`)
+                printf((info) => `[${info.timestamp}] Prueba: ${info.message}`)
             )
-        }),
-        new transpMySql(opcionesTransp)
+        })
     ]
+}
+
+//Crea el logger
+const logger = createLogger({
+    //Loguea dependiendo del ambiente
+    transports: transportesEnv
 });
 
 module.exports = { loggerMeta, logger };

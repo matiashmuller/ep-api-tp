@@ -96,7 +96,7 @@ const obtenerTodos = (router, modelo, atributosAMostrar, incluye, nombreEntidad,
         paginaNro: pagina,
         elementos
       });
-      logger.info(`Éxito al mostrar ${nombreEntidad}.`, loggerMeta(req, res));
+      logger.info(`Éxito al mostrar ${nombreEntidad}s.`, loggerMeta(req, res));
     } catch (error) {
       responderAlError(error, req, res, 1, nombreEntidad);
     }
