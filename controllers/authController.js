@@ -20,8 +20,8 @@ async function registrarUsuario(req, res) {
     const token = jwt.sign(
       { nombre },
       process.env.SECRET_KEY,
-      //Expira en una hora
-      { expiresIn: 60 * 60 }
+      //Expira en 4 horas
+      { expiresIn: 60 * 60 * 4 }
     );
     //Muestra un JSON con el token creado
     res.status(200).json({ message: `Éxito al registrar usuario. Usuario nuevo: ${nombre}.`, token });
