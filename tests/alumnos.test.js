@@ -9,9 +9,6 @@ const alumnosRandom = [
   { id: 3, dni: 28545326, nombre: 'Tito', apellido: 'Corintio', fecha_nac: '1990-10-30', id_carrera: 2 }
 ]
 
-//Crea un nuevo objeto en base a alumnosRandom[0] sin la propiedad 'id', no necesaria en el ingreso de datos en el body
-const bodyAlumno = Object.fromEntries(Object.entries(alumnosRandom[0]).slice(1));
-
 describe('GET /alum', () => {
   test('debería mostrar todos los alumnos contados y paginados', async () => {
     //Envía respuesta emulada a partir del mock de findAndCountAll
@@ -77,7 +74,8 @@ describe('POST /alum', () => {
   test('debería registrar un nuevo alumno', async () => {
     //Envía respuesta emulada a partir del mock de create
     const mockCreate = jest.spyOn(alumno, 'create').mockImplementationOnce(() => (alumnosRandom[0]));
-
+    //Crea un nuevo objeto en base a alumnosRandom[0] sin la propiedad 'id', no necesaria en el ingreso de datos en el body
+    const bodyAlumno = Object.fromEntries(Object.entries(alumnosRandom[0]).slice(1));
     //Hace la petición HTTP que lanza create con los datos para 'body'
     const { statusCode, body } = await request(app).post('/alum').send(bodyAlumno);
 
@@ -94,27 +92,34 @@ describe('POST /alum', () => {
 
 describe('PUT /alum/:id', () => {
   test('debería actualizar un alumno por su ID', async () => {
-    //Emula un update de alumno
-    const mockUpdate = jest.spyOn(alumno, 'update').mockImplementationOnce(() => (1))
-    //Agrega propiedad update a alumnosRandom[0] y le asigna el mockUpdate
+    //Hace un clon de un alumno y le cambia el nombre
+    clon = structuredClone(alumnosRandom[0])
+    clon.nombre = 'Homero'
+    //Emula un update de alumno devolviendo el clon con la propiedad cambiada
+    const mockUpdate = jest.spyOn(alumno, 'update').mockImplementationOnce(() => (clon))
+    //Agrega propiedad update a alumnosRandom[0] y le asigna el mockUpdate para simular la actualización del mismo
     alumnosRandom[0].update = mockUpdate
     //Emula findOne encontrando a 'alumnosRandom[0]'
     const mockFindOne = jest.spyOn(alumno, 'findOne').mockImplementationOnce(() => (alumnosRandom[0]))
-    //Cambia propiedad nombre
-    alumnosRandom[0].nombre = 'Homero'
-    //Hace la petición HTTP que lanza findOne y update, enviando el body 'bodyAlumno'
-    const { statusCode, body } = await request(app).put('/alum/1').send(bodyAlumno);
+    //Prepara el body para la request, el 'clon' sin id
+    const bodyParaActualizar = Object.fromEntries(Object.entries(clon).slice(1));
+    //Hace la petición HTTP que lanza findOne y update, enviando el body 'bodyParaActualizar'
+    const { statusCode, body } = await request(app).put('/alum/1').send(bodyParaActualizar);
 
     //Comprueba la corrección de los resultados
-    expect(mockUpdate).toHaveBeenCalledTimes(1)
     expect(mockFindOne).toHaveBeenCalledTimes(1)
+    expect(mockUpdate).toHaveBeenCalledTimes(1)
     expect(statusCode).toBe(200);
     expect(body).toBeInstanceOf(Object);
     expect(body).toHaveProperty('estado')
     expect(body).toHaveProperty('actualizado')
-    expect(body.actualizado).toHaveProperty('id')
-    expect(body.actualizado).toHaveProperty('nombre')
-    expect(body.actualizado.nombre).toBe('Homero')
+    const { actualizado } = body
+    expect(actualizado).toHaveProperty('id')
+    expect(actualizado.id).toBe(1)
+    expect(actualizado).toHaveProperty('nombre')
+    expect(actualizado.nombre).toBe('Homero')
+    expect(actualizado).toHaveProperty('apellido')
+    expect(actualizado.apellido).toBe('Dórico')
   });
 });
 
@@ -123,7 +128,7 @@ describe('DELETE /alum/:id', () => {
     //Emula un destroy de alumno
     const mockDestroy = jest.spyOn(alumno, 'destroy').mockImplementationOnce(() => (1))
 
-    //Agrega propiedad destroy al objeto clon y le asigna el mockDestroy
+    //Agrega propiedad destroy y le asigna el mockDestroy para simular el borrado
     alumnosRandom[0].destroy = mockDestroy
     //Emula findOne encontrando a 'alumnosRandom[0]'
     const mockFindOne = jest.spyOn(alumno, 'findOne').mockImplementationOnce(() => (alumnosRandom[0]))

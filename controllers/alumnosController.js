@@ -104,14 +104,14 @@ async function actualizarAlumno(req, res) {
     //Comprueba validez de atributos ingresados en el cuerpo de la petición
     comprobarAtributos(atributosACrearOActualizar, req)
     //Busca el registro a actualizar
-    var registro = await buscarRegistro(modelo, atributosABuscarYMostrar, relacionesAIncluir, req.params.id);
+    const registro = await buscarRegistro(modelo, atributosABuscarYMostrar, relacionesAIncluir, req.params.id);
     //Actualiza los valores de los atributos de la registro con los del cuerpo de la petición
-    await registro.update(
+    const registroActualizado = await registro.update(
       req.body, {
       fields: atributosACrearOActualizar
     });
     //Envía respuesta de éxito y loguea a consola y bd
-    res.status(200).json({ estado: `Éxito al actualizar ${nombreEntidad}`, actualizado: registro });
+    res.status(200).json({ estado: `Éxito al actualizar ${nombreEntidad}`, actualizado: registroActualizado });
     logger.info(`Éxito al actualizar ${nombreEntidad}`, loggerMeta(req, res));
   } catch (error) {
     responderAlError(error, req, res, req.params.id, nombreEntidad);
