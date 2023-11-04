@@ -104,7 +104,7 @@ async function actualizarCarrera(req, res) {
     //Comprueba validez de atributos ingresados en el cuerpo de la petición
     comprobarAtributos(atributosACrearOActualizar, req)
     //Busca el registro a actualizar
-    const registro = await modelo.findOne({ where: { id: req.params.id } });
+    const registro = await buscarRegistro(modelo, atributosABuscarYMostrar, relacionesAIncluir, req.params.id);
     //Actualiza los valores de los atributos de el registro con los del cuerpo de la petición
     await registro.update(
       req.body, {
@@ -122,7 +122,7 @@ async function actualizarCarrera(req, res) {
 async function borrarCarrera(req,res){
   try {
     //Busca el registro a borrar
-    const registro = await modelo.findOne({ where: { id: req.params.id } });
+    const registro = await buscarRegistro(modelo, atributosABuscarYMostrar, relacionesAIncluir, req.params.id);
     //Borra el registro
     await registro.destroy();
     //Envía respuesta de éxito y loguea a consola y bd

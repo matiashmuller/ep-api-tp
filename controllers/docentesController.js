@@ -76,7 +76,7 @@ async function obtenerTodosDocentes(req, res) {
 //Controlador para obtener un docente por su id
 async function obtenerDocPorId(req, res) {
   try {
-    const registro = await buscarRegistro(modelo, atributosABuscarYMostrar, relacionesAIncluir, req.params.id, nombreEntidad);
+    const registro = await buscarRegistro(modelo, atributosABuscarYMostrar, relacionesAIncluir, req.params.id);
     res.json(registro);
     logger.info(`Éxito al mostrar ${nombreEntidad}.`, loggerMeta(req, res));
   } catch (error) {
@@ -110,7 +110,7 @@ async function actualizarDocente(req, res) {
     //Comprueba validez de atributos ingresados en el cuerpo de la petición
     comprobarAtributos(atributosACrearOActualizar, req)
     //Busca el registro a actualizar
-    const registro = await modelo.findOne({ where: { id: req.params.id } });
+    const registro = await buscarRegistro(modelo, atributosABuscarYMostrar, relacionesAIncluir, req.params.id);
     //Actualiza los valores de los atributos de la registro con los del cuerpo de la petición
     await registro.update(
       req.body, {
@@ -128,7 +128,7 @@ async function actualizarDocente(req, res) {
 async function borrarDocente(req, res) {
   try {
     //Busca el registro a borrar
-    const registro = await modelo.findOne({ where: { id: req.params.id } });
+    const registro = await buscarRegistro(modelo, atributosABuscarYMostrar, relacionesAIncluir, req.params.id);
     //Borra el registro
     await registro.destroy();
     //Envía respuesta de éxito y loguea a consola y bd

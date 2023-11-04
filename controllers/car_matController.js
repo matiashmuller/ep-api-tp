@@ -69,7 +69,7 @@ async function obtenerTodasCarMat(req, res) {
 //Controlador para obtener una relación por su id
 async function obtenerCarMatPorId(req, res) {
   try {
-    const registro = await buscarRegistro(modelo, atributosABuscarYMostrar, relacionesAIncluir, req.params.id, nombreEntidad);
+    const registro = await buscarRegistro(modelo, atributosABuscarYMostrar, relacionesAIncluir, req.params.id);
     res.json(registro);
     logger.info(`Éxito al mostrar ${nombreEntidad}.`, loggerMeta(req, res));
   } catch (error) {
@@ -122,7 +122,7 @@ async function actualizarComision(req, res) {
 async function borrarCarMat(req,res){
   try {
     //Busca el registro a borrar
-    const registro = await modelo.findOne({ where: { id: req.params.id } });
+    const registro = await buscarRegistro(modelo, atributosABuscarYMostrar, relacionesAIncluir, req.params.id);
     //Borra el registro
     await registro.destroy();
     //Envía respuesta de éxito y loguea a consola y bd

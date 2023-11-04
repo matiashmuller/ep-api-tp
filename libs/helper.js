@@ -6,7 +6,7 @@ const { logger, loggerMeta } = require("./logger");
 const responderAlError = (error, req, res, id, nombreEntidad) => {
   if (error == "SequelizeUniqueConstraintError: Validation error") {
     res.status(400).send('Bad request: Ya existe en la base de datos.')
-  } else if (error.message == `${nombreEntidad} no encontrado.`) {
+  } else if (error.message == `No encontrado.`) {
     res.status(404).send(`Error: ${nombreEntidad} con id ${id} no encontrado.`);
   } else {
     res.sendStatus(500)
@@ -18,7 +18,7 @@ const responderAlError = (error, req, res, id, nombreEntidad) => {
 Búsqueda de registro por id: recibe un modelo a buscar, sus atributos, relaciones a incluir,
 un id, y un nombre de la entidad
 */
-const buscarRegistro = async (modelo, atributosABuscar, incluye, id, nombreEntidad) => {
+const buscarRegistro = async (modelo, atributosABuscar, incluye, id) => {
   const registro = await modelo.findOne({
     attributes: atributosABuscar,
     //Asocicación
@@ -26,7 +26,7 @@ const buscarRegistro = async (modelo, atributosABuscar, incluye, id, nombreEntid
     where: { id }
   });
   if (!registro) {
-    throw new Error(`${nombreEntidad} no encontrado.`)
+    throw new Error(`No encontrado.`)
   }
   return registro;
 };

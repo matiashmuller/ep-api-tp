@@ -9,6 +9,9 @@ const alumnosRandom = [
   { id: 3, dni: 28545326, nombre: 'Tito', apellido: 'Corintio', fecha_nac: '1990-10-30', id_carrera: 2 }
 ]
 
+//Crea un nuevo objeto en base a alumnosRandom[0] sin la propiedad 'id', no necesaria en el ingreso de datos en el body
+const bodyAlumno = Object.fromEntries(Object.entries(alumnosRandom[0]).slice(1));
+
 describe('GET ALL /alum', () => {
   test('debería mostrar todos los alumnos contados y paginados', async () => {
     //Envía respuesta emulada a partir del mock de findAndCountAll
@@ -75,8 +78,6 @@ describe('POST /alum', () => {
     //Envía respuesta emulada a partir del mock de create
     const mockCreate = jest.spyOn(alumno, 'create').mockImplementationOnce(() => (alumnosRandom[0]));
 
-    //Quita de alumnosRandom[0] la propiedad 'id' no necesaria en el ingreso de datos en el body
-    const bodyAlumno = Object.fromEntries(Object.entries(alumnosRandom[0]).slice(1));
     //Hace la petición HTTP que lanza create con los datos para 'body'
     const { statusCode, body } = await request(app).post('/alum').send(bodyAlumno);
 
@@ -88,5 +89,57 @@ describe('POST /alum', () => {
     expect(body.estado).toBe('Éxito al crear alumno');
     expect(body).toHaveProperty('id');
     expect(body.id).toBe(1);
+  });
+});
+
+describe('PUT /alum/:id', () => {
+  test('debería actualizar un alumno por su ID', async () => {
+    //Emula un update de alumno
+    const mockUpdate = jest.spyOn(alumno, 'update').mockImplementationOnce(() => (1))
+    //Crea clon de alumnosRandom[0] para no modificar el original
+    alumnoAActualizar = structuredClone(alumnosRandom[0])
+    //Agrega propiedad update al objeto clon y le asigna el mockUpdate
+    alumnoAActualizar.update = mockUpdate
+    //Emula findOne encontrando a 'alumnoAActualizar'
+    const mockFindOne = jest.spyOn(alumno, 'findOne').mockImplementationOnce(() => (alumnoAActualizar))
+    //Quita la propiedad id no necesaria para el body de la put request
+    delete alumnoAActualizar.id
+    //Cambia propiedad nombre
+    alumnoAActualizar.nombre = 'Homero'
+    //Hace la petición HTTP que lanza findOne y update, enviando el body
+    const { statusCode, body } = await request(app).put('/alum/1').send(alumnoAActualizar);
+
+    //Comprueba la corrección de los resultados
+    expect(mockUpdate).toHaveBeenCalledTimes(1)
+    expect(mockFindOne).toHaveBeenCalledTimes(1)
+    expect(statusCode).toBe(200);
+    expect(body).toBeInstanceOf(Object);
+    expect(body).toHaveProperty('estado')
+    expect(body).toHaveProperty('actualizado')
+    expect(body.actualizado).toHaveProperty('nombre')
+    expect(body.actualizado.nombre).toBe('Homero')
+  });
+});
+
+describe('DELETE /alum/:id', () => {
+  test('debería eliminar un alumno por su ID', async () => {
+    //Emula un destroy de alumno
+    const mockDestroy = jest.spyOn(alumno, 'destroy').mockImplementationOnce(() => (1))
+
+    //Crea clon de alumnosRandom[0] para no modificar el original
+    alumnoABorrar = structuredClone(alumnosRandom[0])
+    //Agrega propiedad destroy al objeto clon y le asigna el mockDestroy
+    alumnoABorrar.destroy = mockDestroy
+    //Emula findOne encontrando a 'alumnoABorrar'
+    const mockFindOne = jest.spyOn(alumno, 'findOne').mockImplementationOnce(() => (alumnoABorrar))
+
+    //Hace la petición HTTP que lanza findOne y destroy
+    const { status, text } = await request(app).delete('/alum/1')
+
+    //Comprueba la corrección de los resultados
+    expect(mockDestroy).toHaveBeenCalledTimes(1)
+    expect(mockFindOne).toHaveBeenCalledTimes(1)
+    expect(status).toBe(200);
+    expect(text).toBe('Éxito al eliminar alumno.');
   });
 });
