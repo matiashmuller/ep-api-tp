@@ -1,32 +1,17 @@
-var express = require("express");
-var router = express.Router();
-var models = require("../models");
-const { obtenerTodos, obtenerPorId, borrarPorId, crearNuevo, actualizarPorId } = require('../libs/helper');
-
-const modelo = models.alumno
-const atributosABuscarYMostrar = ["id", "dni", "nombre", "apellido", "fecha_nac"]
-const atributosACrearOActualizar = ["dni", "nombre", "apellido", "fecha_nac", "id_carrera"]
-const relacionesAIncluir = [{
-  as: 'carreraQueEstudia',
-  model: models.carrera,
-  attributes: ["nombre"]
-}, {
-  as: 'materiasQueCursa',
-  model: models.materia,
-  attributes: ["nombre", "carga_horaria"],
-  through: { attributes: ["id"] }
-}]
-const nombreEntidad = 'alumno'
+const express = require("express");
+const router = express.Router();
+const { obtenerTodosAlumnos, obtenerAlumPorId, registrarAlumno, actualizarAlumno, borrarAlumno } = require("../controllers/alumnosController");
+const validarToken = require("../libs/validarToken");
 
 //Mostrar todos los elementos de la tabla, paginados
-obtenerTodos(router, modelo, atributosABuscarYMostrar, relacionesAIncluir, nombreEntidad);
+router.get("/", validarToken, obtenerTodosAlumnos);
 //Obtener por id
-obtenerPorId(router, modelo, atributosABuscarYMostrar, relacionesAIncluir, nombreEntidad);
+router.get("/:id", validarToken, obtenerAlumPorId);
 //Crear registro con los valores del cuerpo de la petición
-crearNuevo(router, modelo, atributosACrearOActualizar, nombreEntidad);
+router.post("/", validarToken, registrarAlumno);
 //Actualizar por id
-actualizarPorId(router, modelo, atributosACrearOActualizar, nombreEntidad);
+router.put("/:id", validarToken, actualizarAlumno);
 //Borrar por id
-borrarPorId(router, modelo, nombreEntidad);
+router.delete("/:id", validarToken, borrarAlumno);
 
 module.exports = router;
