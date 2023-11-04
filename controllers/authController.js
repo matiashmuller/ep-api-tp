@@ -5,7 +5,6 @@ const bcrypt = require('bcrypt');
 const { logger, loggerMeta } = require('../libs/logger');
 const { responderAlError } = require('../libs/helper_new');
 
-
 async function registrarUsuario(req, res) {
   try {
     //Toma el nombre y la contraseña del cuerpo de la solicitud

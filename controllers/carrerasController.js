@@ -18,7 +18,7 @@ const relacionesAIncluir = [{
 const nombreEntidad = 'carrera'
 const noEsTablaUnion = true
 
-//Controlador para obtener todos los alumnos
+//Controlador para obtener todas las carreras
 async function obtenerTodasCarreras(req, res) {
   try {
     /*
@@ -67,7 +67,7 @@ async function obtenerTodasCarreras(req, res) {
   }
 }
 
-//Controlador para obtener un alumno por su id
+//Controlador para obtener una carrera por su id
 async function obtenerCarreraPorId(req, res) {
   try {
     const registro = await buscarRegistro(modelo, atributosABuscarYMostrar, relacionesAIncluir, req.params.id, nombreEntidad);
@@ -78,7 +78,7 @@ async function obtenerCarreraPorId(req, res) {
   }
 }
 
-//Controlador para registrar nuevo alumno
+//Controlador para registrar nueva carrera
 async function registrarCarrera(req, res) {
   try {
     //Comprueba validez de atributos ingresados en el cuerpo de la petición
@@ -98,7 +98,7 @@ async function registrarCarrera(req, res) {
   }
 }
 
-//Controlador para actualizar alumno
+//Controlador para actualizar carrera
 async function actualizarCarrera(req, res) {
   try {
     //Comprueba validez de atributos ingresados en el cuerpo de la petición
@@ -118,7 +118,7 @@ async function actualizarCarrera(req, res) {
   }
 }
 
-//Controlador para borrar alumno
+//Controlador para borrar carrera
 async function borrarCarrera(req,res){
   try {
     //Busca el registro a borrar

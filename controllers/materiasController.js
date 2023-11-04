@@ -2,23 +2,39 @@ const { responderAlError, buscarRegistro, comprobarAtributos } = require("../lib
 const { logger, loggerMeta } = require("../libs/logger");
 
 const models = require("../models");
-const modelo = models.comision
-//No se incluyen foreign keys para mostrar un respuesta más prolija
-const atributosABuscarYMostrar = ["id", "letra", "dias", "turno"]
-const atributosACrearOActualizar = ["letra", "dias", "turno", "id_materia", "id_docente"]
+const modelo = models.materia
+const atributosABuscarYMostrar = ["id", "nombre", "carga_horaria"]
+const atributosACrearOActualizar = ["nombre", "carga_horaria"]
 const relacionesAIncluir = [{
-  as: 'materia',
-  model: models.materia,
-  attributes: ['id', "nombre"]
+  as: 'carrerasQueLaIncluyen',
+  model: models.carrera,
+  attributes: ["nombre"],
+  through: { attributes: ["id"] }
 }, {
+  /**
+  as: 'profQueLaDictan',
   model: models.docente,
-  attributes: ['id', "nombre", "apellido"]
+  attributes: ["nombre", "apellido"],
+  through: { attributes: ["letra", "dias", "turno"] }
+  */
+  as: 'comisiones',
+  model: models.comision,
+  attributes: ["letra", "dias", "turno"],
+  include: {
+    model: models.docente,
+    attributes: ['id', 'nombre', 'apellido']
+  }
+}, {
+  as: 'alumnQueLaCursan',
+  model: models.alumno,
+  attributes: ["nombre", "apellido"],
+  through: { attributes: ["id"] }
 }]
-const nombreEntidad = 'comision'
-const noEsTablaUnion = false
+const nombreEntidad = 'materia'
+const noEsTablaUnion = true
 
-//Controlador para obtener todas las comisiones
-async function obtenerTodasComisiones(req, res) {
+//Controlador para obtener todas las materias
+async function obtenerTodasMaterias(req, res) {
   try {
     /*
     Toma de parámetros para paginación:
@@ -66,8 +82,8 @@ async function obtenerTodasComisiones(req, res) {
   }
 }
 
-//Controlador para obtener una comisión por su id
-async function obtenerComisionPorId(req, res) {
+//Controlador para obtener una materia por su id
+async function obtenerMateriaPorId(req, res) {
   try {
     const registro = await buscarRegistro(modelo, atributosABuscarYMostrar, relacionesAIncluir, req.params.id, nombreEntidad);
     res.json(registro);
@@ -77,8 +93,8 @@ async function obtenerComisionPorId(req, res) {
   }
 }
 
-//Controlador para registrar nueva comisión
-async function registrarComision(req, res) {
+//Controlador para registrar nueva materia
+async function registrarMateria(req, res) {
   try {
     //Comprueba validez de atributos ingresados en el cuerpo de la petición
     comprobarAtributos(atributosACrearOActualizar, req)
@@ -97,14 +113,14 @@ async function registrarComision(req, res) {
   }
 }
 
-//Controlador para actualizar comisión
-async function actualizarComision(req, res) {
+//Controlador para actualizar materia
+async function actualizarMateria(req, res) {
   try {
     //Comprueba validez de atributos ingresados en el cuerpo de la petición
     comprobarAtributos(atributosACrearOActualizar, req)
     //Busca el registro a actualizar
     const registro = await modelo.findOne({ where: { id: req.params.id } });
-    //Actualiza los valores de los atributos de el registro con los del cuerpo de la petición
+    //Actualiza los valores de los atributos del registro con los del cuerpo de la petición
     await registro.update(
       req.body, {
       fields: atributosACrearOActualizar
@@ -117,8 +133,8 @@ async function actualizarComision(req, res) {
   }
 }
 
-//Controlador para borrar comisión
-async function borrarComision(req,res){
+//Controlador para borrar carrera
+async function borrarMateria(req,res){
   try {
     //Busca el registro a borrar
     const registro = await modelo.findOne({ where: { id: req.params.id } });
@@ -132,4 +148,4 @@ async function borrarComision(req,res){
   }
 }
 
-module.exports = { obtenerTodasComisiones, obtenerComisionPorId, registrarComision, actualizarComision, borrarComision }
+module.exports = { obtenerTodasMaterias, obtenerMateriaPorId, registrarMateria, actualizarMateria, borrarMateria }

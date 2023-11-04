@@ -1,13 +1,7 @@
 const { logger, loggerMeta } = require("./logger");
 
 //Funciones auxiliares
-/** 
- * Función ejemplo de Tomi para generalizar:
- * obtenerParametros = (req: Request) => {
-    const { params: { id }, body: { letra, materia_id, docente_id } } = req // aca despues lo adaptas
-    return { id, letra, materia_id, docente_id }
-}
-*/
+
 //Respuesta a errores con log a consola y bd
 const responderAlError = (error, req, res, id, nombreEntidad) => {
   if (error == "SequelizeUniqueConstraintError: Validation error") {

@@ -1,39 +1,17 @@
-var express = require("express");
-var router = express.Router();
-var models = require("../models");
-const { obtenerTodos, obtenerPorId, borrarPorId, crearNuevo, actualizarPorId } = require('../libs/helper');
-
-const modelo = models.docente
-const atributosABuscarYMostrar = ["id", "dni", "nombre", "apellido", "titulo", "fecha_nac"]
-const atributosACrearOActualizar = ["dni", "nombre", "apellido", "titulo", "fecha_nac"]
-const relacionesAIncluir = [{
-  /**
-  as: 'materiasQueDicta',
-  model: models.materia,
-  attributes: ["id", "nombre", "carga_horaria"],
-  through: { attributes: ["letra", "dias", "turno"] }
-  */
-  as: 'comisionesAsignadas',
-  model: models.comision,
-  attributes: ["letra", "dias", "turno"],
-  include: {
-    as: 'materia',
-    model: models.materia,
-    attributes: ['id', 'nombre']
-  }
-
-}]
-const nombreEntidad = 'docente'
+const express = require("express");
+const router = express.Router();
+const { obtenerTodosDocentes, obtenerDocPorId, registrarDocente, actualizarDocente, borrarDocente } = require("../controllers/docentesController");
+const validarToken = require("../libs/validarToken");
 
 //Mostrar todos los elementos de la tabla, paginados
-obtenerTodos(router, modelo, atributosABuscarYMostrar, relacionesAIncluir, nombreEntidad);
+router.get("/", validarToken, obtenerTodosDocentes);
 //Obtener por id
-obtenerPorId(router, modelo, atributosABuscarYMostrar, relacionesAIncluir, nombreEntidad);
+router.get("/:id", validarToken, obtenerDocPorId);
 //Crear registro con los valores del cuerpo de la petición
-crearNuevo(router, modelo, atributosACrearOActualizar, nombreEntidad);
+router.post("/", validarToken, registrarDocente);
 //Actualizar por id
-actualizarPorId(router, modelo, atributosACrearOActualizar, nombreEntidad);
+router.put("/:id", validarToken, actualizarDocente);
 //Borrar por id
-borrarPorId(router, modelo, nombreEntidad);
+router.delete("/:id", validarToken, borrarDocente);
 
 module.exports = router;
