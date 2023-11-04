@@ -1,31 +1,17 @@
-var express = require("express");
-var router = express.Router();
-var models = require("../models");
-const { obtenerTodos, obtenerPorId, borrarPorId, crearNuevo, actualizarPorId } = require('../libs/helper');
-
-const modelo = models.carrera_materia
-//No se incluyen foreign keys para mostrar un respuesta más prolija
-const atributosABuscarYMostrar = ["id"]
-const atributosACrearOActualizar = ["id_carrera", "id_materia"]
-const relacionesAIncluir = [{
-  model: models.carrera,
-  attributes: ['id', "nombre"]
-}, {
-  as: 'materia',
-  model: models.materia,
-  attributes: ['id', "nombre"]
-}]
-const nombreEntidad = 'carrera_materia'
+const express = require("express");
+const router = express.Router();
+const { obtenerTodasCarMat, obtenerCarMatPorId, registrarCarMat, borrarCarMat } = require("../controllers/car_matController");
+const validarToken = require("../libs/validarToken");
 
 //Mostrar todos los elementos de la tabla, paginados
-obtenerTodos(router, modelo, atributosABuscarYMostrar, relacionesAIncluir, nombreEntidad, false);
+router.get("/", validarToken, obtenerTodasCarMat);
 //Obtener por id
-obtenerPorId(router, modelo, atributosABuscarYMostrar, relacionesAIncluir, nombreEntidad);
+router.get("/:id", validarToken, obtenerCarMatPorId);
 //Crear registro con los valores del cuerpo de la petición
-crearNuevo(router, modelo, atributosACrearOActualizar, nombreEntidad);
-//Actualizar por id - por ahora no sirve, descartar?
-//actualizarPorId(router, modelo, atributosACrearOActualizar, nombreEntidad);
+router.post("/", validarToken, registrarCarMat);
+//Actualizar por id
+//router.put("/:id", validarToken, actualizarAlumno);
 //Borrar por id
-borrarPorId(router, modelo, nombreEntidad);
+router.delete("/:id", validarToken, borrarCarMat);
 
 module.exports = router;

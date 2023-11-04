@@ -1,4 +1,4 @@
-const { responderAlError, buscarRegistro, comprobarAtributos } = require("../libs/helper_new");
+const { responderAlError, buscarRegistro, comprobarAtributos } = require("../libs/helper");
 const { logger, loggerMeta } = require("../libs/logger");
 
 const models = require("../models");
@@ -119,7 +119,7 @@ async function actualizarAlumno(req, res) {
 }
 
 //Controlador para borrar alumno
-async function borrarAlumno(req,res){
+async function borrarAlumno(req, res) {
   try {
     //Busca el registro a borrar
     const registro = await modelo.findOne({ where: { id: req.params.id } });

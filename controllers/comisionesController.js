@@ -1,4 +1,4 @@
-const { responderAlError, buscarRegistro, comprobarAtributos } = require("../libs/helper_new");
+const { responderAlError, buscarRegistro, comprobarAtributos } = require("../libs/helper");
 const { logger, loggerMeta } = require("../libs/logger");
 
 const models = require("../models");

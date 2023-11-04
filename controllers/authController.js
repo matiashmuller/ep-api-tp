@@ -3,7 +3,7 @@ const models = require("../models");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const { logger, loggerMeta } = require('../libs/logger');
-const { responderAlError } = require('../libs/helper_new');
+const { responderAlError } = require('../libs/helper');
 
 async function registrarUsuario(req, res) {
   try {

@@ -2,8 +2,6 @@ const app = require('../app');
 const request = require('supertest');
 const modelos = require('../models');
 const alumno = modelos.alumno
-//Workaround para problema de timeout con mysql
-//jest.useFakeTimers()
 
 const alumnosRandom = [
   { id: 1, dni: 40222333, nombre: 'Jónico', apellido: 'Dórico', fecha_nac: '2000-07-25', id_carrera: 1 },

@@ -2,39 +2,23 @@ const { responderAlError, buscarRegistro, comprobarAtributos } = require("../lib
 const { logger, loggerMeta } = require("../libs/logger");
 
 const models = require("../models");
-const modelo = models.materia
-const atributosABuscarYMostrar = ["id", "nombre", "carga_horaria"]
-const atributosACrearOActualizar = ["nombre", "carga_horaria"]
+const modelo = models.carrera_materia
+//No se incluyen foreign keys para mostrar un respuesta más prolija
+const atributosABuscarYMostrar = ["id"]
+const atributosACrearOActualizar = ["id_carrera", "id_materia"]
 const relacionesAIncluir = [{
-  as: 'carrerasQueLaIncluyen',
   model: models.carrera,
-  attributes: ["nombre"],
-  through: { attributes: ["id"] }
+  attributes: ['id', "nombre"]
 }, {
-  /**
-  as: 'profQueLaDictan',
-  model: models.docente,
-  attributes: ["nombre", "apellido"],
-  through: { attributes: ["letra", "dias", "turno"] }
-  */
-  as: 'comisiones',
-  model: models.comision,
-  attributes: ["letra", "dias", "turno"],
-  include: {
-    model: models.docente,
-    attributes: ['id', 'nombre', 'apellido']
-  }
-}, {
-  as: 'alumnQueLaCursan',
-  model: models.alumno,
-  attributes: ["nombre", "apellido"],
-  through: { attributes: ["id"] }
+  as: 'materia',
+  model: models.materia,
+  attributes: ['id', "nombre"]
 }]
-const nombreEntidad = 'materia'
-const noEsTablaUnion = true
+const nombreEntidad = 'carrera_materia'
+const noEsTablaUnion = false
 
-//Controlador para obtener todas las materias
-async function obtenerTodasMaterias(req, res) {
+//Controlador para obtener todas las relaciones carrera y materia
+async function obtenerTodasCarMat(req, res) {
   try {
     /*
     Toma de parámetros para paginación:
@@ -82,8 +66,8 @@ async function obtenerTodasMaterias(req, res) {
   }
 }
 
-//Controlador para obtener una materia por su id
-async function obtenerMateriaPorId(req, res) {
+//Controlador para obtener una relación por su id
+async function obtenerCarMatPorId(req, res) {
   try {
     const registro = await buscarRegistro(modelo, atributosABuscarYMostrar, relacionesAIncluir, req.params.id, nombreEntidad);
     res.json(registro);
@@ -93,8 +77,8 @@ async function obtenerMateriaPorId(req, res) {
   }
 }
 
-//Controlador para registrar nueva materia
-async function registrarMateria(req, res) {
+//Controlador para registrar nueva relación
+async function registrarCarMat(req, res) {
   try {
     //Comprueba validez de atributos ingresados en el cuerpo de la petición
     comprobarAtributos(atributosACrearOActualizar, req)
@@ -112,15 +96,15 @@ async function registrarMateria(req, res) {
     responderAlError(error, req, res, 1, nombreEntidad);
   }
 }
-
-//Controlador para actualizar materia
-async function actualizarMateria(req, res) {
+/**
+//Controlador para actualizar relación
+async function actualizarComision(req, res) {
   try {
     //Comprueba validez de atributos ingresados en el cuerpo de la petición
     comprobarAtributos(atributosACrearOActualizar, req)
     //Busca el registro a actualizar
     const registro = await modelo.findOne({ where: { id: req.params.id } });
-    //Actualiza los valores de los atributos del registro con los del cuerpo de la petición
+    //Actualiza los valores de los atributos de el registro con los del cuerpo de la petición
     await registro.update(
       req.body, {
       fields: atributosACrearOActualizar
@@ -132,9 +116,10 @@ async function actualizarMateria(req, res) {
     responderAlError(error, req, res, req.params.id, nombreEntidad);
   }
 }
+ */
 
-//Controlador para borrar carrera
-async function borrarMateria(req,res){
+//Controlador para borrar relación
+async function borrarCarMat(req,res){
   try {
     //Busca el registro a borrar
     const registro = await modelo.findOne({ where: { id: req.params.id } });
@@ -148,4 +133,4 @@ async function borrarMateria(req,res){
   }
 }
 
-module.exports = { obtenerTodasMaterias, obtenerMateriaPorId, registrarMateria, actualizarMateria, borrarMateria }
+module.exports = { obtenerTodasCarMat, obtenerCarMatPorId, registrarCarMat, borrarCarMat }
