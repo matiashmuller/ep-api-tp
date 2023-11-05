@@ -100,7 +100,7 @@ async function registrarAlumno(req, res) {
 async function actualizarAlumno(req, res) {
   try {
     //Comprueba validez de atributos ingresados en el cuerpo de la petición
-    comprobarAtributos(atributosACrearOActualizar, req)
+    comprobarAtributos(atributosACrearOActualizar, req, true)
     //Busca el registro a actualizar
     const registro = await buscarRegistro(modelo, atributosABuscarYMostrar, relacionesAIncluir, req.params.id);
     //Actualiza los valores de los atributos del registro con los del cuerpo de la petición

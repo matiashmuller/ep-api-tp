@@ -8,6 +8,8 @@ const responderAlError = (error, req, res, id, nombreEntidad) => {
     res.status(400).send('Bad request: Ya existe en la base de datos.')
   } else if (error.message == `No encontrado.`) {
     res.status(404).send(`Error: ${nombreEntidad} con id ${id} no encontrado.`);
+  } else if (error.message == `Atributos ingresados incorrectos.`) {
+    res.status(500).send(`Error: ${error.message}`);
   } else {
     res.sendStatus(500)
   }
@@ -39,12 +41,32 @@ para comprobar que los atributos ingresados en el cuerpo de la solicitud
 son los correctos. Es decir, que coinciden con los establecidos en el 
 código y en el registro de la entidad en la base de datos.
 */
-const comprobarAtributos = (atributosAComprobar, req) => {
-  if (atributosAComprobar.length != Object.keys(req.body).length) {
-    throw new Error('Atributos ingresados incorrectos.')
+const comprobarAtributos = (atributosAComparar, req, esUpdate = false) => {
+  const atributosBody = Object.keys(req.body)
+  /**
+   * Si no es una actualización, comprueba que haya la cantidad correcta de atributos en el req.body
+   * para no entrar a iterar innecesariamente
+   */
+  if (!esUpdate) {
+    if (atributosAComparar.length != atributosBody.length) {
+      throw new Error('Atributos ingresados incorrectos.')
+    }
   }
-  for (var i = 0; i < atributosAComprobar.length; i++) {
-    if (atributosAComprobar[i] != Object.keys(req.body)[i]) {
+  /*
+   * Condición a 'preguntar' en la iteración:
+   * Por defecto, 'condición' indica si hay algún atributo no compatible (!=) en el req.body, comparando
+   * con los declarados en el código.
+   * Si se trata de una actualización, la condición pasa a ser que el o los atributos ingresados
+   * en el req.body estén entre en los declarados en el código
+   */
+  const condicion = (indice) => {
+    var condicion = atributosBody[indice] != atributosAComparar[indice]
+    esUpdate? condicion = !atributosAComparar.includes(atributosBody[i]) : condicion
+    return condicion
+  }
+  //Itera sobre los atributos del req.body comprobando si se cumple la condición
+  for (var i = 0; i < atributosBody.length; i++) {
+    if (condicion(i)) {
       throw new Error('Atributos ingresados incorrectos.')
     }
   }
