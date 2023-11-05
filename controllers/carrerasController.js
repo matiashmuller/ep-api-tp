@@ -102,16 +102,13 @@ async function registrarCarrera(req, res) {
 async function actualizarCarrera(req, res) {
   try {
     //Comprueba validez de atributos ingresados en el cuerpo de la petición
-    comprobarAtributos(atributosACrearOActualizar, req)
+    comprobarAtributos(atributosACrearOActualizar, req, true)
     //Busca el registro a actualizar
     const registro = await buscarRegistro(modelo, atributosABuscarYMostrar, relacionesAIncluir, req.params.id);
-    //Actualiza los valores de los atributos de el registro con los del cuerpo de la petición
-    await registro.update(
-      req.body, {
-      fields: atributosACrearOActualizar
-    });
+    //Actualiza los valores de los atributos del registro con los del cuerpo de la petición
+    const registroActualizado = await registro.update(req.body);
     //Envía respuesta de éxito y loguea a consola y bd
-    res.status(200).json({ estado: `Éxito al actualizar ${nombreEntidad}`, actualizado: registro });
+    res.status(200).json({ estado: `Éxito al actualizar ${nombreEntidad}.`, actualizado: registroActualizado });
     logger.info(`Éxito al actualizar ${nombreEntidad}`, loggerMeta(req, res));
   } catch (error) {
     responderAlError(error, req, res, req.params.id, nombreEntidad);
