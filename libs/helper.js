@@ -1,17 +1,31 @@
 const { logger, loggerMeta } = require("./logger");
+const validator = require('validator')
 
 //Funciones auxiliares
 
 //Respuesta a errores con log a consola y bd
-const responderAlError = (error, req, res, id, nombreEntidad) => {
+
+//Mensajes que disparan 401
+const noAutorizado = [
+  'Contraseña incorrecta.',
+  'Ingrese un email válido.',
+  'Contraseña y nombre de usuario o email requerido.',
+  'No existe token.',
+  'Token inválido.'
+]
+
+//Responde y loguea según el error
+const responderAlError = (error, req, res, id = 1, nombreEntidad = 'registro') => {
   if (error == "SequelizeUniqueConstraintError: Validation error") {
-    res.status(400).send('Bad request: Ya existe en la base de datos.')
+    res.status(400).send(`Error: Esx ${nombreEntidad} ya existe en la base de datos.`)
+  } else if (noAutorizado.includes(error.message)) {
+    res.status(401).send(`Error: ${error.message}`);
+  } else if (error.message == ('Usuario no encontrado.')) {
+    res.status(404).send(`Error: ${error.message}`);
   } else if (error.message == `No encontrado.`) {
     res.status(404).send(`Error: ${nombreEntidad} con id ${id} no encontrado.`);
-  } else if (error.message == `Atributos ingresados incorrectos.`) {
-    res.status(500).send(`Error: ${error.message}`);
   } else {
-    res.sendStatus(500)
+    res.status(500).send(`Error: ${error.message}`);
   }
   logger.error(`${error}`, loggerMeta(req, res));
 }
@@ -61,7 +75,7 @@ const comprobarAtributos = (atributosAComparar, req, esUpdate = false) => {
    */
   const condicion = (indice) => {
     var condicion = atributosBody[indice] != atributosAComparar[indice]
-    esUpdate? condicion = !atributosAComparar.includes(atributosBody[i]) : condicion
+    esUpdate ? condicion = !atributosAComparar.includes(atributosBody[i]) : condicion
     return condicion
   }
   //Itera sobre los atributos del req.body comprobando si se cumple la condición
@@ -72,4 +86,10 @@ const comprobarAtributos = (atributosAComparar, req, esUpdate = false) => {
   }
 }
 
-module.exports = { responderAlError, buscarRegistro, comprobarAtributos }
+const validarEmail = (email) => {
+  if (!validator.isEmail(email)) {
+    throw new Error('Ingrese un email válido.')
+  }
+}
+
+module.exports = { responderAlError, buscarRegistro, comprobarAtributos, validarEmail }
