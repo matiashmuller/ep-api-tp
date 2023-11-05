@@ -57,8 +57,8 @@ async function iniciarSesion(req, res) {
     const token = jwt.sign(
       { nombre },
       process.env.SECRET_KEY,
-      //Expira en una hora
-      { expiresIn: 60 * 60 }
+      //Expira en 4 horas
+      { expiresIn: 60 * 60 * 4 }
     );
     //Loguea y muestra un mensaje de éxito y el token creado
     res.status(200).json({ message: `Éxito al iniciar sesión. Usuario autenticado: ${nombre}.`, token });
