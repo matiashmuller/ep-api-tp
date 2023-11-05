@@ -86,6 +86,7 @@ const comprobarAtributos = (atributosAComparar, req, esUpdate = false) => {
   }
 }
 
+//Valida si un supuesto email tiene el formato correcto, de no ser así, lanza error
 const validarEmail = (email) => {
   if (!validator.isEmail(email)) {
     throw new Error('Ingrese un email válido.')
