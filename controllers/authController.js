@@ -5,6 +5,8 @@ const bcrypt = require('bcrypt');
 const { logger, loggerMeta } = require('../libs/logger');
 const { responderAlError, validarEmail } = require('../libs/helper');
 
+const nombreEntidad = 'usuario'
+
 async function registrarUsuario(req, res) {
   try {
     //Toma el nombre y la contraseña del cuerpo de la solicitud
@@ -28,11 +30,11 @@ async function registrarUsuario(req, res) {
       { expiresIn: 60 * 60 * 4 }
     );
     //Muestra un JSON con el token creado
-    res.status(200).json({ message: `Éxito al registrar usuario. Usuario nuevo: ${nombre}.`, token });
-    logger.info(`Éxito al registrar usuario. Usuario nuevo: ${nombre}.`, loggerMeta(req, res));
+    res.status(201).json({ estado: `Éxito al registrar ${nombreEntidad}. Usuario nuevo: ${nombre}.`, token });
+    logger.info(`Éxito al registrar ${nombreEntidad}. Usuario nuevo: ${nombre}.`, loggerMeta(req, res));
   } catch (error) {
     //Envía respuestas de error y logs a consola y bd
-    responderAlError(error, req, res, 1, 'usuario')
+    responderAlError(error, req, res, 1, nombreEntidad)
   }
 }
 
@@ -67,7 +69,7 @@ async function iniciarSesion(req, res) {
       { expiresIn: 60 * 60 * 4 }
     );
     //Loguea y muestra un mensaje de éxito y el token creado
-    res.status(200).json({ message: `Éxito al iniciar sesión. Usuario autenticado: ${usuario.nombre}.`, token });
+    res.status(200).json({ estado: `Éxito al iniciar sesión. Usuario autenticado: ${usuario.nombre}.`, token });
     logger.info(`Éxito al iniciar sesión. Usuario autenticado: ${usuario.nombre}`, loggerMeta(req, res));
   } catch (error) {
     //Envía respuestas de error y logs a consola y bd
@@ -84,10 +86,10 @@ async function verCuenta(req, res) {
     });
 
     //Muestra el usuario que tiene la sesión iniciada
-    res.status(200).json(usuario);
+    res.status(200).json({ estado: 'Éxito al mostrar cuenta.', usuario });
     logger.info(`Éxito al mostrar cuenta. Usuario: '${usuario.nombre}'`, loggerMeta(req, res));
   } catch (error) {
-    responderAlError(error, req, res, req.id, 'usuario');
+    responderAlError(error, req, res, req.id, nombreEntidad);
   }
 }
 
