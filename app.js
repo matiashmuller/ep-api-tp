@@ -11,6 +11,7 @@ var comisionesRouter = require('./routes/comisiones');
 var al_matRouter = require('./routes/alumno_materia');
 var car_matRouter = require('./routes/carrera_materia');
 var authRouter = require('./routes/authorization');
+const { swaggerDocs } = require('./swagger');
 
 var app = express();
 
@@ -24,6 +25,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+//Documentación
+swaggerDocs(app, process.env.PORT || 3000)
 app.use('/auth', authRouter);
 app.use('/car', carrerasRouter);
 app.use('/doc', docentesRouter);
