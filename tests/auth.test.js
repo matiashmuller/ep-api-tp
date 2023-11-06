@@ -11,7 +11,7 @@ const bodyRegistro = Object.fromEntries(Object.entries(usuarioRandom).slice(1))
 const bodyLogin = Object.fromEntries(Object.entries(bodyRegistro).slice(1, 3))
 
 describe('POST /auth/registro', () => {
-  test('deberia registrar un nuevo usuario', async () => {
+  test('debería registrar un nuevo usuario', async () => {
     //Mock de create usuario que devuelve usuarioRandom
     const mockCreate = jest.spyOn(usuario, 'create').mockImplementationOnce(() => (usuarioRandom));
 
@@ -31,7 +31,7 @@ describe('POST /auth/registro', () => {
 });
 
 describe('POST /auth/login', () => {
-  test('deberia iniciar sesión de un usuario', async () => {
+  test('debería iniciar sesión de un usuario', async () => {
     //Mock de findOne usuario que emula encontrar a usuarioRandom
     const mockFindOne = jest.spyOn(usuario, 'findOne').mockImplementationOnce(() => (usuarioRandom));
     //Mock de bcrypt.compare() que emula comparación de contraseña hasheada correcta (responde 'true')
@@ -71,7 +71,7 @@ describe('POST /auth/login', () => {
 
 
 describe('GET /auth/cuenta', () => {
-  test('deberia mostrar la cuenta del usuario autenticado', async () => {
+  test('debería mostrar la cuenta del usuario autenticado', async () => {
     //Mock de findOne usuario que emula encontrar a usuarioRandom
     const mockFindOne = jest.spyOn(usuario, 'findOne').mockImplementationOnce(() => (usuarioRandom));
 
@@ -94,7 +94,7 @@ describe('GET /auth/cuenta', () => {
 });
 
 describe('GET /auth/logout', () => {
-  test('deberia cerrar sesión', async () => {
+  test('debería cerrar sesión', async () => {
     //Hace la petición HTTP que cierra la sesión
     const { statusCode, text } = await request(app).get('/auth/logout');
 
