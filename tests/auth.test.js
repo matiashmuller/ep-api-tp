@@ -69,7 +69,6 @@ describe('POST /auth/login', () => {
   });
 });
 
-
 describe('GET /auth/cuenta', () => {
   test('debería mostrar la cuenta del usuario autenticado', async () => {
     //Mock de findOne usuario que emula encontrar a usuarioRandom
