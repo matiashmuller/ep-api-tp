@@ -14,9 +14,9 @@ const validarToken = require("../libs/validarToken");
  */
 /**
  * @openapi
- * /alum:
+ * /alum/:
  *   get:
- *     summary: Muestra todos los alumnos registrados en la base de datos paginados, por defecto, de a 5 elementos por página.
+ *     summary: Muestra todos los alumnos registrados en la base de datos paginados (por defecto, de a 5 elementos por página).
  *     security:
  *       - bearerAuth: []
  *     tags:
@@ -67,6 +67,81 @@ const validarToken = require("../libs/validarToken");
  *             schema:
  *               type: string
  *               example: Error interno del servidor.
+ * 
+ *   post:
+ *     summary: Registra un nuevo alumno en la base de datos.
+ *     security:
+ *       - bearerAuth: []
+ *     tags:
+ *       - Alumnos
+ * 
+ * /alum/{id}:
+ *   get:
+ *     summary: Busca y muestra un alumno por su 'id'.
+ *     security:
+ *       - bearerAuth: []
+ *     tags:
+ *       - Alumnos
+ *     parameters:
+ *       - in: query
+ *         name: pagina
+ *         squema:
+ *           type: integer
+ *         description: El número de página a mostrar.
+ *       - in: query
+ *         name: cantPorPag
+ *         squema:
+ *           type: integer
+ *         description: El número de elementos a mostrar por página.
+ *     responses:
+ *       200:
+ *         description: OK.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 totalElementos:
+ *                   type: integer
+ *                   example: 1
+ *                 totalPaginas:
+ *                   type: integer
+ *                   example: 1
+ *                 paginaNro:
+ *                   type: integer
+ *                   example: 1
+ *                 elementos:
+ *                   type: array 
+ *                   items:
+ *                     $ref: "#/components/schemas/alumno"
+ *       401:
+ *         description: Acceso no autorizado, token inválido o inexistente.
+ *         content:
+ *           text/html:
+ *             schema:
+ *               type: string
+ *               example: Error, token inválido
+ *       5XX:
+ *         description: Error en el servidor.
+ *         content:
+ *           text/html:
+ *             schema:
+ *               type: string
+ *               example: Error interno del servidor.
+ * 
+ *   put:
+ *     summary: Busca, actualiza y muestra un alumno por su 'id'.
+ *     security:
+ *       - bearerAuth: []
+ *     tags:
+ *       - Alumnos
+ *   
+ *   delete:
+ *     summary: Busca un alumno por su id y lo elimina de la base de datos.
+ *     security:
+ *       - bearerAuth: []
+ *     tags:
+ *       - Alumnos
  */
 router.get("/", validarToken, obtenerTodosAlumnos);
 //Obtener por id
