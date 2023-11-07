@@ -32,7 +32,8 @@ const responderAlError = (error, req, res, id = 1, nombreEntidad = 'registro') =
 
 /*
 Búsqueda de registro por id: recibe un modelo a buscar, sus atributos, relaciones a incluir,
-un id, y un nombre de la entidad
+un id, y un nombre de la entidad.
+Si encuentra el registro lo devuelve, si no, lanza error.
 */
 const buscarRegistro = async (modelo, atributosABuscar, incluye, id) => {
   const registro = await modelo.findOne({
@@ -50,12 +51,12 @@ const buscarRegistro = async (modelo, atributosABuscar, incluye, id) => {
 /*
 Primero comprueba que las keys del cuerpo de la petición tienen la misma cantidad de
 elementos que el array 'atributosAComprobar'.
-Luego itera tanta cantidad de veces como elementos en el array 'atributosAComprobar' haya 
-para comprobar que los atributos ingresados en el cuerpo de la solicitud 
-son los correctos. Es decir, que coinciden con los establecidos en el 
+Luego itera preguntando la 'condición' para comprobar que los atributos ingresados en el 
+cuerpo de la solicitud son los correctos. Es decir, que coinciden con los establecidos en el 
 código y en el registro de la entidad en la base de datos.
+Finalmente, si 'esAuth' (registro de nuevo usuario), valida el formato del email ingresado.
 */
-const comprobarAtributos = (atributosAComparar, req, esUpdate = false) => {
+const comprobarAtributos = (atributosAComparar, req, esUpdate = false, esAuth = false) => {
   const atributosBody = Object.keys(req.body)
   /**
    * Si no es una actualización, comprueba que haya la cantidad correcta de atributos en el req.body
@@ -84,6 +85,15 @@ const comprobarAtributos = (atributosAComparar, req, esUpdate = false) => {
       throw new Error('Atributos ingresados incorrectos.')
     }
   }
+  //Si es un registro de usuario, valida el email
+  if (esAuth) { validarEmail(req.body.email) }
+}
+
+//Comprueba la correctitud de atributos para loguearse (email o nombre + contraseña)
+const comprobarLogin = (req) => {
+  const { nombre, email, contraseña } = req.body;
+  if (!(nombre || email) || !contraseña) { throw new Error('Contraseña y nombre de usuario o email requerido.') }
+  if (!nombre && email) { validarEmail(email) }
 }
 
 //Valida si un supuesto email tiene el formato correcto, de no ser así, lanza error
@@ -93,4 +103,4 @@ const validarEmail = (email) => {
   }
 }
 
-module.exports = { responderAlError, buscarRegistro, comprobarAtributos, validarEmail }
+module.exports = { responderAlError, buscarRegistro, comprobarAtributos, comprobarLogin }

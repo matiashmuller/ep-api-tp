@@ -93,6 +93,13 @@ const validarToken = require("../libs/validarToken");
  *             schema:
  *               type: object
  *               example: {"estado":"Éxito al crear alumno","id":1}
+ *       400:
+ *         description: Bad request.
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *               example: Error, Esx alumno ya existe en la base de datos.
  *       401:
  *         description: No autorizado.
  *         content:

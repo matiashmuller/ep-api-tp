@@ -3,16 +3,17 @@ const models = require("../models");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const { logger, loggerMeta } = require('../libs/logger');
-const { responderAlError, validarEmail } = require('../libs/helper');
+const { responderAlError, comprobarAtributos, comprobarLogin } = require('../libs/helper');
 
+const atributosACrear = ["nombre", "email", "contraseña"]
 const nombreEntidad = 'usuario'
 
 async function registrarUsuario(req, res) {
   try {
-    //Toma el nombre y la contraseña del cuerpo de la solicitud
+    //Comprueba validez de atributos ingresados en el cuerpo de la petición
+    comprobarAtributos(atributosACrear, req, false, true)
+    //Toma el nombre, email y la contraseña del cuerpo de la solicitud
     const { nombre, email, contraseña } = req.body;
-    //Validar email
-    validarEmail(email);
     //Crea un hash de la contraseña usando bcrypt
     const passHash = await bcrypt.hash(contraseña, 10);
     //Crea un nuevo usuario en la base de datos con el nombre y la contraseña
@@ -40,11 +41,10 @@ async function registrarUsuario(req, res) {
 
 async function iniciarSesion(req, res) {
   try {
+    //Comprueba validez de atributos ingresados en el cuerpo de la petición
+    comprobarLogin(req);
     //Toma el nombre y la contraseña del cuerpo de la solicitud
     const { nombre, email, contraseña } = req.body;
-    //Validaciones
-    if (!(nombre || email) || !contraseña) { throw new Error('Contraseña y nombre de usuario o email requerido.') }
-    if (!nombre && email) { validarEmail(email) }
     //Busca un usuario según se provea nombre o email en el req.body
     const usuario = await models.usuario.findOne({
       where:
