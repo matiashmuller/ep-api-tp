@@ -3,16 +3,13 @@ const router = express.Router();
 const validarToken = require('../libs/validarToken');
 const { registrarUsuario, iniciarSesion, verCuenta, cerrarSesion } = require('../controllers/authController');
 
-//Crear nuevo usuario
-router.post('/registro', registrarUsuario);
-
 /**
  * @swagger
  * /auth/login:
  *   post:
  *     summary: Permite iniciar sesión con (nombre o email) y contraseña.
  *     tags:
- *       - Iniciar sesión
+ *       - Authorization
  *     requestBody:
  *       required: true
  *       content:
@@ -22,10 +19,10 @@ router.post('/registro', registrarUsuario);
  *             properties:
  *                nombre:
  *                  type: string
- *                  example: Ezequiel
+ *                  example: Matías
  *                email:
  *                  type: string
- *                  example: eze@mail.com 
+ *                  example: matias@mail.com 
  *                contraseña:
  *                  type: string
  *                  example: 1234
@@ -36,14 +33,15 @@ router.post('/registro', registrarUsuario);
  *           application/json:
  *             schema:
  *               type: object
- *               properties:
- *                 estado:
- *                   type: string
- *                   example: Éxito al iniciar sesión. Usuario autenticado Ezequiel.
- *                 token:
- *                   type: string
- *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjk5MzE1MDY5LCJleHAiOjE2OTkzMjk0Njl9.kD4V0jsaUkjeF4TOkOuTg7tdwexPGcrBctg2fCR-w68
+ *               example: {
+ *                       "estado":"Éxito al iniciar sesión. Usuario autenticado Matías.",
+ *                       "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjk5MzI5OTg1LCJleHAiOjE2OTkzNDQzODV9.GCwpHIhRH930NASgLGvIMHp7732YwhzRt20R_-sBJAM"
+ *               }
  */
+
+//Crear nuevo usuario
+router.post('/registro', registrarUsuario);
+//Iniciar sesión
 router.post('/login', iniciarSesion);
 //Ver datos de la cuenta logueada
 router.get('/cuenta', validarToken, verCuenta);

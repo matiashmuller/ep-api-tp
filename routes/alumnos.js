@@ -171,6 +171,13 @@ const validarToken = require("../libs/validarToken");
  *       - bearerAuth: []
  *     tags:
  *       - Alumnos
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: El id del alumno a actualizar.
+ *         required: true
+ *         squema:
+ *           type: integer
  *     requestBody:
  *       required: true
  *       content:
@@ -230,7 +237,45 @@ const validarToken = require("../libs/validarToken");
  *       - bearerAuth: []
  *     tags:
  *       - Alumnos
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: El id del alumno a eliminar.
+ *         required: true
+ *         squema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: OK.
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *               example: Éxito al eliminar alumno.
+ *       401:
+ *         description: No autorizado.
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *               example: Error, token inválido
+ *       404:
+ *         description: No encontrado.
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *               example: Error, alumno con {id} no encontrado.
+ *       5XX:
+ *         description: Error en el servidor.
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *               example: Error interno del servidor.
  */
+
+//Obtener todos los alumnos
 router.get("/", validarToken, obtenerTodosAlumnos);
 //Obtener por id
 router.get("/:id", validarToken, obtenerAlumPorId);
