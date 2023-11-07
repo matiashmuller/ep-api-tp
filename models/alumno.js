@@ -8,28 +8,30 @@
  *       properties:
  *         id: 
  *           type: integer
- *           example: 1
  *         dni: 
  *           type: integer
- *           example: 45666777
  *         nombre:
  *           type: string
- *           example: "Ezequiel"
  *         apellido:
  *           type: string
- *           example: "Agüero"
  *         fecha_nac:
  *           type: dateonly
- *           example: 1995-07-06
  *         id_carrera:
  *           type: integer
- *           example: 1
  *         createdAt:
  *           type: date
- *           example: 4/20/2022 2:21:56
  *         updatedAt: 
  *           type: date
- *           example: 4/20/2022 2:21:56
+ *       example: {
+ *              'id': 1,
+ *              'dni': 39666777,
+ *              'nombre': "Ezequiel",
+ *              'apellido': 'Agüero',
+ *              'fecha_nac': '1995-07-06',
+ *              'id_carrera': 1,
+ *              'createdAt': 2023-11-06 22:25:35,
+ *              'updatedAt': 2023-11-06 22:25:35 
+ *       }
  */
 module.exports = (sequelize, DataTypes) => {
   const alumno = sequelize.define('alumno', {

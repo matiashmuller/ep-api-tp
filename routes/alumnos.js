@@ -42,31 +42,44 @@ const validarToken = require("../libs/validarToken");
  *               properties:
  *                 totalElementos:
  *                   type: integer
- *                   example: 1
  *                 totalPaginas:
  *                   type: integer
- *                   example: 1
  *                 paginaNro:
  *                   type: integer
- *                   example: 1
  *                 elementos:
- *                   type: array 
- *                   items:
- *                     $ref: "#/components/schemas/alumno"
+ *                   type: array
+ *               example: {
+ *                      "totalElementos":1,
+ *                      "totalPaginas":1,
+ *                      "paginaNro":1,
+ *                      "elementos": [{
+ *                                  "id": 1,
+ *                                  "dni": 45666777,
+ *                                  "nombre": "Ezequiel",
+ *                                  "apellido": "Agüero",
+ *                                  "fecha_nac": "1995-07-06",
+ *                                  "carreraQueEstudia": {"nombre":"Licenciatura en informática"},
+ *                                  "materiasQueCursa": [
+ *                                    {"nombre":"Matemática I","carga_horaria":8,"alumno_materia":{"id":1}},
+ *                                    {"nombre":"Organización de computadoras","carga_horaria":8,"alumno_materia":{"id":2}}
+ *                                  ]
+ *                      }]
+ *               }
  *       401:
- *         description: Acceso no autorizado, token inválido o inexistente.
+ *         description: No autorizado.
  *         content:
- *           text/html:
+ *           text/plain:
  *             schema:
  *               type: string
  *               example: Error, token inválido
  *       5XX:
- *         description: Error en el servidor.
+ *         description: Error del servidor.
  *         content:
- *           text/html:
+ *           text/plain:
  *             schema:
  *               type: string
  *               example: Error interno del servidor.
+ * 
  * 
  *   post:
  *     summary: Registra un nuevo alumno en la base de datos.
@@ -74,6 +87,52 @@ const validarToken = require("../libs/validarToken");
  *       - bearerAuth: []
  *     tags:
  *       - Alumnos
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *                dni:
+ *                  type: integer
+ *                nombre:
+ *                  type: string
+ *                apellido:
+ *                  type: string
+ *                fecha_nac:
+ *                  type: dateonly
+ *                id_carrera:
+ *                  type: integer
+ *             example: {"dni": 39666777,"nombre": "Ezequiel","apellido": "Agüero","fecha_nac": "1995-07-06","id_carrera": 1}
+ *     responses:
+ *       201:
+ *         description: Creado.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 estado:
+ *                   type: string
+ *                 id:
+ *                   type: integer
+ *               example: {"estado":"Éxito al crear alumno","id":1}
+ *       401:
+ *         description: No autorizado.
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *               example: Error, token inválido
+ *       5XX:
+ *         description: Error del servidor.
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *               example: Error, Atributos ingresados incorrectos.
+ * 
  * 
  * /alum/{id}:
  *   get:
@@ -117,14 +176,14 @@ const validarToken = require("../libs/validarToken");
  *       401:
  *         description: Acceso no autorizado, token inválido o inexistente.
  *         content:
- *           text/html:
+ *           text/plain:
  *             schema:
  *               type: string
  *               example: Error, token inválido
  *       5XX:
  *         description: Error en el servidor.
  *         content:
- *           text/html:
+ *           text/plain:
  *             schema:
  *               type: string
  *               example: Error interno del servidor.
