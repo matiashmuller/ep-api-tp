@@ -4,16 +4,14 @@ const { obtenerTodosAlumnos, obtenerAlumPorId, registrarAlumno, actualizarAlumno
 const validarToken = require("../libs/validarToken");
 
 /**
- * @swagger
+ * @openapi
  * components:
  *   securitySchemes:
  *     bearerAuth:
  *       type: apiKey
  *       name: token
  *       in: header
- */
-/**
- * @openapi
+ * 
  * /alum/:
  *   get:
  *     summary: Muestra todos los alumnos registrados en la base de datos paginados (por defecto, de a 5 elementos por página).

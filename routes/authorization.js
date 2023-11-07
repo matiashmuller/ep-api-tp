@@ -115,6 +115,63 @@ const { registrarUsuario, iniciarSesion, verCuenta, cerrarSesion } = require('..
  *               type: string
  *               example: Error interno del servidor.
  * 
+ * /auth/cuenta/:
+ *   get:
+ *     summary: Permite ver la 'cuenta' del usuario que tiene la sesión iniciada.
+ *     security:
+ *       - bearerAuth: []
+ *     tags:
+ *       - Authorization
+ *     responses:
+ *       200:
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example: {
+ *                         "estado": "Éxito al mostrar cuenta.",
+ *                         "usuario": {
+ *                           "id": 1,
+ *                           "nombre": "Matías",
+ *                           "email": "matias@mail.com"
+ *                         }
+ *               }
+ *       404:
+ *         description: No encontrado.
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *               example: Error, usuario no encontrado.
+ *       5XX:
+ *         description: Error en el servidor.
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *               example: Error interno del servidor.
+ * 
+ * /auth/logout/:
+ *   get:
+ *     summary: Cierra la sesión de usuario.
+ *     tags:
+ *       - Authorization
+ *     responses:
+ *       200:
+ *         description: OK
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *               example: Éxito al cerrar sesión.
+ *       5XX:
+ *         description: Error en el servidor.
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *               example: Error interno del servidor.
  */
 
 //Crear nuevo usuario

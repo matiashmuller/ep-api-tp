@@ -95,8 +95,13 @@ async function verCuenta(req, res) {
 
 function cerrarSesion(req, res) {
   //El token se borra del storage del navegador desde el front-end, y acá sólo envía una respuesta de éxito:
-  res.status(200).send('Éxito al cerrar sesión.');
-  logger.info('Éxito al cerrar sesión.', loggerMeta(req, res));
+  try {
+    res.status(200).send('Éxito al cerrar sesión.');
+    logger.info('Éxito al cerrar sesión.', loggerMeta(req, res));
+  } catch (error) {
+    responderAlError(error, req, res);
+  }
+
 }
 
 module.exports = { registrarUsuario, iniciarSesion, verCuenta, cerrarSesion }
