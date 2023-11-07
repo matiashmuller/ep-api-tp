@@ -1,4 +1,24 @@
 'use strict';
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     carrera:
+ *       type: object
+ *       properties:
+ *         id: 
+ *           type: integer
+ *           example: 1
+ *         nombre:
+ *           type: string
+ *           example: "Tecnicatura en programación"
+ *         createdAt:
+ *           type: date
+ *           example: 4/20/2022 2:21:56
+ *         updatedAt: 
+ *           type: date
+ *           example: 4/20/2022 2:21:56
+ */
 module.exports = (sequelize, DataTypes) => {
   const carrera = sequelize.define('carrera', {
     nombre: DataTypes.STRING

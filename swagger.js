@@ -5,9 +5,20 @@ const swaggerUi = require("swagger-ui-express");
 const options = {
   definition: {
     openapi: "3.0.0",
-    info: { title: "API - Estrategias de Persistencia - UNAHUR", version: "1.0.0" },
+    info: {
+      title: "API - Estrategias de Persistencia - UNAHUR",
+      version: "1.0.0"
+    },
+    securityDefinitions: {
+      bearerAuth: {
+        type: 'apiKey',
+        name: 'token',
+        scheme: 'token',
+        in: 'token',
+      },
+    },
   },
-  apis: ["./routes/*.js"],
+  apis: ["./routes/*.js", "./models/*.js"],
 };
 
 //Documentación en formato JSON
