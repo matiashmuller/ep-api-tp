@@ -22,16 +22,16 @@ const validarToken = require("../libs/validarToken");
  *     tags:
  *       - Alumnos
  *     parameters:
- *       - in: query
- *         name: pagina
- *         squema:
- *           type: integer
+ *       - name: pagina
+ *         in: query
  *         description: El número de página a mostrar.
- *       - in: query
- *         name: cantPorPag
  *         squema:
  *           type: integer
+ *       - name: cantPorPag
+ *         in: query
  *         description: El número de elementos a mostrar por página.
+ *         squema:
+ *           type: integer
  *     responses:
  *       200:
  *         description: OK.
@@ -39,15 +39,6 @@ const validarToken = require("../libs/validarToken");
  *           application/json:
  *             schema:
  *               type: object
- *               properties:
- *                 totalElementos:
- *                   type: integer
- *                 totalPaginas:
- *                   type: integer
- *                 paginaNro:
- *                   type: integer
- *                 elementos:
- *                   type: array
  *               example: {
  *                      "totalElementos":1,
  *                      "totalPaginas":1,
@@ -93,17 +84,6 @@ const validarToken = require("../libs/validarToken");
  *         application/json:
  *           schema:
  *             type: object
- *             properties:
- *                dni:
- *                  type: integer
- *                nombre:
- *                  type: string
- *                apellido:
- *                  type: string
- *                fecha_nac:
- *                  type: dateonly
- *                id_carrera:
- *                  type: integer
  *             example: {"dni": 39666777,"nombre": "Ezequiel","apellido": "Agüero","fecha_nac": "1995-07-06","id_carrera": 1}
  *     responses:
  *       201:
@@ -112,11 +92,6 @@ const validarToken = require("../libs/validarToken");
  *           application/json:
  *             schema:
  *               type: object
- *               properties:
- *                 estado:
- *                   type: string
- *                 id:
- *                   type: integer
  *               example: {"estado":"Éxito al crear alumno","id":1}
  *       401:
  *         description: No autorizado.
@@ -142,16 +117,12 @@ const validarToken = require("../libs/validarToken");
  *     tags:
  *       - Alumnos
  *     parameters:
- *       - in: query
- *         name: pagina
+ *       - name: id
+ *         in: path
+ *         description: El id del alumno a mostrar.
+ *         required: true
  *         squema:
  *           type: integer
- *         description: El número de página a mostrar.
- *       - in: query
- *         name: cantPorPag
- *         squema:
- *           type: integer
- *         description: El número de elementos a mostrar por página.
  *     responses:
  *       200:
  *         description: OK.
@@ -159,27 +130,33 @@ const validarToken = require("../libs/validarToken");
  *           application/json:
  *             schema:
  *               type: object
- *               properties:
- *                 totalElementos:
- *                   type: integer
- *                   example: 1
- *                 totalPaginas:
- *                   type: integer
- *                   example: 1
- *                 paginaNro:
- *                   type: integer
- *                   example: 1
- *                 elementos:
- *                   type: array 
- *                   items:
- *                     $ref: "#/components/schemas/alumno"
+ *               example: {
+ *                          "id": 1,
+ *                          "dni": 45666777,
+ *                          "nombre": "Ezequiel",
+ *                          "apellido": "Agüero",
+ *                          "fecha_nac": "1995-07-06",
+ *                          "carreraQueEstudia": {"nombre":"Licenciatura en informática"},
+ *                          "materiasQueCursa": [
+ *                            {"nombre":"Matemática I","carga_horaria":8,"alumno_materia":{"id":1}},
+ *                            {"nombre":"Organización de computadoras","carga_horaria":8,"alumno_materia":{"id":2}}
+ *                          ]
+ *               }
+ *         
  *       401:
- *         description: Acceso no autorizado, token inválido o inexistente.
+ *         description: No autorizado.
  *         content:
  *           text/plain:
  *             schema:
  *               type: string
  *               example: Error, token inválido
+ *       404:
+ *         description: No encontrado.
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *               example: Error, alumno con {id} no encontrado.
  *       5XX:
  *         description: Error en el servidor.
  *         content:
@@ -194,6 +171,58 @@ const validarToken = require("../libs/validarToken");
  *       - bearerAuth: []
  *     tags:
  *       - Alumnos
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             example: {"dni": 39666777,"nombre": "Ezequiel","apellido": "López","fecha_nac": "1995-07-06","id_carrera": 1}
+ *     responses:
+ *       200:
+ *         description: OK.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example: {
+ *                          "estado":"Éxito al actualizar alumno.",
+ *                          "actualizado": {
+ *                            "id": 1,
+ *                            "dni": 45666777,
+ *                            "nombre": "Ezequiel",
+ *                            "apellido": "Agüero",
+ *                            "fecha_nac": "1995-07-06",
+ *                            "carreraQueEstudia": {"nombre":"Licenciatura en informática"},
+ *                            "materiasQueCursa": [
+ *                              {"nombre":"Matemática I","carga_horaria":8,"alumno_materia":{"id":1}},
+ *                              {"nombre":"Organización de computadoras","carga_horaria":8,"alumno_materia":{"id":2}}
+ *                            ],
+ *                            "id_carrera":1,
+ *                            "updatedAt":"2023-11-07T04:18:01.860Z"
+ *                          }
+ *               }
+ *       401:
+ *         description: No autorizado.
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *               example: Error, token inválido
+ *       404:
+ *         description: No encontrado.
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *               example: Error, alumno con {id} no encontrado.
+ *       5XX:
+ *         description: Error en el servidor.
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *               example: Error interno del servidor.
  *   
  *   delete:
  *     summary: Busca un alumno por su id y lo elimina de la base de datos.
