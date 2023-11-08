@@ -49,12 +49,10 @@ module.exports = (sequelize, DataTypes) => {
       as: 'carreraQueEstudia',
       foreignKey: 'id_carrera'
     });
-    //Asociación con materia - muchos a muchos a través de tabla intermedia: alumno_materia
-    alumno.belongsToMany(models.materia, {
+    ////Asociación muchos a muchos con materia, simulada de forma uno a muchos con alumno_materia
+    alumno.hasMany(models.alumno_materia, {
       as: 'materiasQueCursa',
-      through: models.alumno_materia,
-      foreignKey: 'id_alumno',
-      otherKey: 'id_materia'
+      foreignKey: 'id_alumno'
     });
   };
 

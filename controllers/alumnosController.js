@@ -10,10 +10,22 @@ const relacionesAIncluir = [{
   model: models.carrera,
   attributes: ["nombre"]
 }, {
+  /**
+  {
   as: 'materiasQueCursa',
   model: models.materia,
   attributes: ["nombre", "carga_horaria"],
   through: { attributes: ["id"] }
+  }
+   */
+  as: 'materiasQueCursa',
+  model: models.alumno_materia,
+  attributes: ["id_materia"],
+  include: {
+    as: 'materia',
+    model: models.materia,
+    attributes: ['nombre']
+  }
 }]
 const nombreEntidad = 'alumno'
 const noEsTablaUnion = true

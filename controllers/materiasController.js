@@ -6,10 +6,21 @@ const modelo = models.materia
 const atributosABuscarYMostrar = ["id", "nombre", "carga_horaria"]
 const atributosACrearOActualizar = ["nombre", "carga_horaria"]
 const relacionesAIncluir = [{
+  /**
+  {
   as: 'carrerasQueLaIncluyen',
   model: models.carrera,
   attributes: ["nombre"],
   through: { attributes: ["id"] }
+  }
+   */
+  as: 'carrerasQueLaIncluyen',
+  model: models.carrera_materia,
+  attributes: ["id_carrera"],
+  include: {
+    model: models.carrera,
+    attributes: ['nombre']
+  }
 }, {
   /**
   as: 'profQueLaDictan',
@@ -25,10 +36,21 @@ const relacionesAIncluir = [{
     attributes: ['id', 'nombre', 'apellido']
   }
 }, {
+  /**
+  {
   as: 'alumnQueLaCursan',
   model: models.alumno,
   attributes: ["nombre", "apellido"],
   through: { attributes: ["id"] }
+  }
+   */
+  as: 'alumnQueLaCursan',
+  model: models.alumno_materia,
+  attributes: ["id_alumno"],
+  include: {
+    model: models.alumno,
+    attributes: ['nombre', 'apellido']
+  }
 }]
 const nombreEntidad = 'materia'
 const noEsTablaUnion = true
@@ -131,7 +153,7 @@ async function actualizarMateria(req, res) {
 }
 
 //Controlador para borrar carrera
-async function borrarMateria(req,res){
+async function borrarMateria(req, res) {
   try {
     //Busca el registro a borrar
     const registro = await buscarRegistro(modelo, atributosABuscarYMostrar, relacionesAIncluir, req.params.id);

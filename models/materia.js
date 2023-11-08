@@ -32,24 +32,20 @@ module.exports = (sequelize, DataTypes) => {
   
   //Asociaciones
   materia.associate = function(models) {
-    //Asociación con carreras - muchos a muchos a través de tabla intermedia: carrera_materia
-  	materia.belongsToMany(models.carrera, {
+    //Asociación muchos a muchos con carrera, simulada de forma uno a muchos con carrera_materia
+  	materia.hasMany(models.carrera_materia, {
       as: 'carrerasQueLaIncluyen',
-      through: models.carrera_materia,
-      foreignKey: 'id_materia',
-      otherKey: 'id_carrera'
+      foreignKey: 'id_materia'
     });
     //Asociación muchos a muchos con docente, simulada de forma uno a muchos con comisión
     materia.hasMany(models.comision, {
       as: 'comisiones',
       foreignKey: 'id_materia'
     });
-    //Asociación con alumno - muchos a muchos a través de tabla intermedia: alumno_materia
-    materia.belongsToMany(models.alumno, {
+    //Asociación muchos a muchos con alumno, simulada de forma uno a muchos con alumno_materia
+    materia.hasMany(models.alumno_materia, {
       as: 'alumnQueLaCursan',
-      through: models.alumno_materia,
-      foreignKey: 'id_materia',
-      otherKey: 'id_alumno'
+      foreignKey: 'id_materia'
     });
   };
 

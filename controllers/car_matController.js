@@ -8,11 +8,11 @@ const atributosABuscarYMostrar = ["id"]
 const atributosACrearOActualizar = ["id_carrera", "id_materia"]
 const relacionesAIncluir = [{
   model: models.carrera,
-  attributes: ['id', "nombre"]
+  attributes: ["id", "nombre"]
 }, {
   as: 'materia',
   model: models.materia,
-  attributes: ['id', "nombre"]
+  attributes: ["id", "nombre"]
 }]
 const nombreEntidad = 'carrera_materia'
 const noEsTablaUnion = false
@@ -96,27 +96,23 @@ async function registrarCarMat(req, res) {
     responderAlError(error, req, res, 1, nombreEntidad);
   }
 }
-/**
+
 //Controlador para actualizar relación
-async function actualizarComision(req, res) {
+async function actualizarCarMat(req, res) {
   try {
     //Comprueba validez de atributos ingresados en el cuerpo de la petición
-    comprobarAtributos(atributosACrearOActualizar, req)
+    comprobarAtributos(atributosACrearOActualizar, req, true)
     //Busca el registro a actualizar
-    const registro = await modelo.findOne({ where: { id: req.params.id } });
-    //Actualiza los valores de los atributos de el registro con los del cuerpo de la petición
-    await registro.update(
-      req.body, {
-      fields: atributosACrearOActualizar
-    });
+    const registro = await buscarRegistro(modelo, atributosABuscarYMostrar, relacionesAIncluir, req.params.id);
+    //Actualiza los valores de los atributos del registro con los del cuerpo de la petición
+    const registroActualizado = await registro.update(req.body);
     //Envía respuesta de éxito y loguea a consola y bd
-    res.status(200).json({ estado: `Éxito al actualizar ${nombreEntidad}`, actualizado: registro });
+    res.status(200).json({ estado: `Éxito al actualizar ${nombreEntidad}.`, actualizado: registroActualizado });
     logger.info(`Éxito al actualizar ${nombreEntidad}`, loggerMeta(req, res));
   } catch (error) {
     responderAlError(error, req, res, req.params.id, nombreEntidad);
   }
 }
- */
 
 //Controlador para borrar relación
 async function borrarCarMat(req,res){
@@ -133,4 +129,4 @@ async function borrarCarMat(req,res){
   }
 }
 
-module.exports = { obtenerTodasCarMat, obtenerCarMatPorId, registrarCarMat, borrarCarMat }
+module.exports = { obtenerTodasCarMat, obtenerCarMatPorId, registrarCarMat, actualizarCarMat, borrarCarMat }
