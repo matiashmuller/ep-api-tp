@@ -9,7 +9,8 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       letra: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       dias: {
         type: Sequelize.STRING
@@ -18,7 +19,8 @@ module.exports = {
         type: Sequelize.STRING
       },
       id_materia: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        allowNull: false
       },
       id_docente: {
         type: Sequelize.INTEGER
@@ -30,6 +32,16 @@ module.exports = {
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
+      }
+    }, {
+      //No debería existir la misma relacion letra-materia ni docente-dias-turno en más de un registro
+      uniqueKeys: {
+        letra_materia: {
+          fields: ['letra', 'id_materia']
+        },
+        doc_dia_turno: {
+          fields: ['id_docente', 'dias', 'turno']
+        }
       }
     });
   },

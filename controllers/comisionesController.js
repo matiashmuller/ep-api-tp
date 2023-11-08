@@ -14,7 +14,7 @@ const relacionesAIncluir = [{
   model: models.docente,
   attributes: ['id', "nombre", "apellido"]
 }]
-const nombreEntidad = 'comision'
+const nombreEntidad = 'comisión'
 const noEsTablaUnion = false
 
 //Controlador para obtener todas las comisiones

@@ -78,7 +78,7 @@ describe('GET /com/:id', () => {
 });
 
 describe('POST /com', () => {
-  test('debería registrar un nuevo comision', async () => {
+  test('debería registrar un nuevo comisión', async () => {
     //Envía respuesta emulada a partir del mock de create
     const mockCreate = jest.spyOn(comision, 'create').mockImplementationOnce(() => (comisionesRandom[0]));
     //Crea un nuevo objeto en base a comisionesRandom[0] sin la propiedad 'id', no necesaria en el ingreso de datos en el body
@@ -93,7 +93,7 @@ describe('POST /com', () => {
     expect(statusCode).toBe(201);
     //El cuerpo de la respuesta es un objeto con las propiedades y valores correctos
     expect(body).toBeInstanceOf(Object);
-    expect(body).toHaveProperty('estado', 'Éxito al crear comision');
+    expect(body).toHaveProperty('estado', 'Éxito al crear comisión');
     expect(body).toHaveProperty('id', 1);
   });
 });
@@ -124,7 +124,7 @@ describe('PUT /com/:id', () => {
     expect(statusCode).toBe(200);
     //Responde con un objeto con las propiedades y valores correctos
     expect(body).toBeInstanceOf(Object);
-    expect(body).toHaveProperty('estado', 'Éxito al actualizar comision.')
+    expect(body).toHaveProperty('estado', 'Éxito al actualizar comisión.')
     expect(body).toHaveProperty('actualizado')
     //'actualizado' contiene las propiedades y valores correctos
     const { actualizado } = body
@@ -153,6 +153,6 @@ describe('DELETE /com/:id', () => {
     expect(mockFindOne).toHaveBeenCalledTimes(1)
     //Las propiedades de la respuesta tienen los valores esperados
     expect(status).toBe(200);
-    expect(text).toBe('Éxito al eliminar comision.');
+    expect(text).toBe('Éxito al eliminar comisión.');
   });
 });

@@ -9,10 +9,12 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       id_alumno: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        allowNull: false
       },
       id_materia: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        allowNull: false
       },
       createdAt: {
         allowNull: false,
@@ -21,6 +23,13 @@ module.exports = {
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
+      }
+    }, {
+      //No debería existir la misma relacion alumno-materia en más de un registro
+      uniqueKeys: {
+        actions_unique: {
+          fields: ['id_alumno', 'id_materia']
+        }
       }
     });
   },
