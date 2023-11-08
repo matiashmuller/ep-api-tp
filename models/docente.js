@@ -1,4 +1,38 @@
 'use strict';
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     docente:
+ *       type: object
+ *       properties:
+ *         id: 
+ *           type: integer
+ *           example: 1
+ *         dni: 
+ *           type: integer
+ *           example: 28756986
+ *         nombre:
+ *           type: string
+ *           example: "Mónica"
+ *         apellido:
+ *           type: string
+ *           example: "Villalba"
+ *         titulo:
+ *           type: string
+ *           example: "Lic. en informática"
+ *         fecha_nac:
+ *           type: dateonly
+ *           example: '1982-07-06'
+ *         createdAt:
+ *           type: date
+ *           example: 2023-11-06 22:25:35
+ *         updatedAt: 
+ *           type: date
+ *           example: 2023-11-06 22:26:35
+ */
+
 module.exports = (sequelize, DataTypes) => {
   const docente = sequelize.define('docente', {
     dni: DataTypes.INTEGER,
@@ -8,20 +42,12 @@ module.exports = (sequelize, DataTypes) => {
     fecha_nac: DataTypes.DATEONLY
   }, {});
   
-  //Asociación con materia - muchos a muchos a través de tabla intermedia: comision
+  //Asociación muchos a muchos con materia, simulada de forma uno a muchos con comisión
   docente.associate = function(models) {
     docente.hasMany(models.comision, {
       as: 'comisionesAsignadas',
       foreignKey: 'id_docente'
     });
-    /**
-  	docente.belongsToMany(models.materia, {
-      as: 'materiasQueDicta',
-      through: models.comision,
-      foreignKey: 'id_docente',
-      otherKey: 'id_materia'
-    });
-     */
   };
 
   return docente;

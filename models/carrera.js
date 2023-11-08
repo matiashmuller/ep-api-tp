@@ -1,4 +1,5 @@
 'use strict';
+
 /**
  * @openapi
  * components:
@@ -17,8 +18,9 @@
  *           example: 4/20/2022 2:21:56
  *         updatedAt: 
  *           type: date
- *           example: 4/20/2022 2:21:56
+ *           example: 4/20/2022 2:22:56
  */
+
 module.exports = (sequelize, DataTypes) => {
   const carrera = sequelize.define('carrera', {
     nombre: DataTypes.STRING

@@ -1,4 +1,29 @@
 'use strict';
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     materia:
+ *       type: object
+ *       properties:
+ *         id: 
+ *           type: integer
+ *           example: 1
+ *         nombre:
+ *           type: string
+ *           example: "Organización de computadoras"
+ *         carga_horaria:
+ *           type: integer
+ *           example: 8
+ *         createdAt:
+ *           type: date
+ *           example: 2023-11-06 22:25:35
+ *         updatedAt: 
+ *           type: date
+ *           example: 2023-11-06 22:26:35
+ */
+
 module.exports = (sequelize, DataTypes) => {
   const materia = sequelize.define('materia', {
     nombre: DataTypes.STRING,
@@ -14,19 +39,11 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'id_materia',
       otherKey: 'id_carrera'
     });
-    //Asociación con docente - muchos a muchos a través de tabla intermedia: comision
+    //Asociación muchos a muchos con docente, simulada de forma uno a muchos con comisión
     materia.hasMany(models.comision, {
       as: 'comisiones',
       foreignKey: 'id_materia'
     });
-    /**
-    materia.belongsToMany(models.docente, {
-      as: 'profQueLaDictan',
-      through: models.comision,
-      foreignKey: 'id_materia',
-      otherKey: 'id_docente'
-    });
-     */
     //Asociación con alumno - muchos a muchos a través de tabla intermedia: alumno_materia
     materia.belongsToMany(models.alumno, {
       as: 'alumnQueLaCursan',
