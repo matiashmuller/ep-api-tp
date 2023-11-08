@@ -95,12 +95,11 @@ describe('POST /almat', () => {
   });
 });
 
-/**
 describe('PUT /almat/:id', () => {
   test('debería actualizar un alumno_materia por su ID', async () => {
-    //Hace un clon de una alumno_materia y le cambia el id_docente
+    //Hace un clon de una alumno_materia y le cambia el id_alumno
     clon = structuredClone(relacionesAlumnoMateria[0])
-    clon.id_docente = 3
+    clon.id_alumno = 3
     //Emula un update de alumno_materia devolviendo el clon con la propiedad cambiada
     const mockUpdate = jest.spyOn(alumno_materia, 'update').mockImplementationOnce(() => (clon))
     //Agrega propiedad update a relacionesAlumnoMateria[0] y le asigna el mockUpdate para simular la actualización del mismo
@@ -127,11 +126,10 @@ describe('PUT /almat/:id', () => {
     //'actualizado' contiene las propiedades y valores correctos
     const { actualizado } = body
     expect(actualizado).toHaveProperty('id', 1)
-    expect(actualizado).toHaveProperty('letra', 'A')
-    expect(actualizado).toHaveProperty('id_docente', 3)
+    expect(actualizado).toHaveProperty('id_alumno', 3)
+    expect(actualizado).toHaveProperty('id_materia', 1)
   });
 });
-*/
 
 describe('DELETE /almat/:id', () => {
   test('debería eliminar una relación alumno_materia por su ID', async () => {

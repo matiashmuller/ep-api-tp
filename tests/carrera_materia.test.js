@@ -95,12 +95,11 @@ describe('POST /carmat', () => {
   });
 });
 
-/**
 describe('PUT /carmat/:id', () => {
   test('debería actualizar un carrera_materia por su ID', async () => {
-    //Hace un clon de una carrera_materia y le cambia el id_docente
+    //Hace un clon de una carrera_materia y le cambia el id_carrera
     clon = structuredClone(relacionesCarreraMateria[0])
-    clon.id_docente = 3
+    clon.id_carrera = 3
     //Emula un update de carrera_materia devolviendo el clon con la propiedad cambiada
     const mockUpdate = jest.spyOn(carrera_materia, 'update').mockImplementationOnce(() => (clon))
     //Agrega propiedad update a relacionesCarreraMateria[0] y le asigna el mockUpdate para simular la actualización del mismo
@@ -127,11 +126,10 @@ describe('PUT /carmat/:id', () => {
     //'actualizado' contiene las propiedades y valores correctos
     const { actualizado } = body
     expect(actualizado).toHaveProperty('id', 1)
-    expect(actualizado).toHaveProperty('letra', 'A')
-    expect(actualizado).toHaveProperty('id_docente', 3)
+    expect(actualizado).toHaveProperty('id_carrera', 3)
+    expect(actualizado).toHaveProperty('id_materia', 1)
   });
 });
-*/
 
 describe('DELETE /carmat/:id', () => {
   test('debería eliminar una relación carrera_materia por su ID', async () => {
