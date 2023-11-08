@@ -5,12 +5,6 @@ const validarToken = require("../libs/validarToken");
 
 /**
  * @openapi
- * components:
- *   securitySchemes:
- *     bearerAuth:
- *       type: apiKey
- *       name: token
- *       in: header
  * 
  * /car/:
  *   get:
@@ -59,14 +53,14 @@ const validarToken = require("../libs/validarToken");
  *       401:
  *         description: No autorizado.
  *         content:
- *           text/plain:
+ *           text/html:
  *             schema:
  *               type: string
  *               example: Error, token inválido
  *       5XX:
  *         description: Error del servidor.
  *         content:
- *           text/plain:
+ *           text/html:
  *             schema:
  *               type: string
  *               example: Error interno del servidor.
@@ -96,21 +90,21 @@ const validarToken = require("../libs/validarToken");
  *       400:
  *         description: Bad request.
  *         content:
- *           text/plain:
+ *           text/html:
  *             schema:
  *               type: string
  *               example: Error, Esx carrera ya existe en la base de datos.
  *       401:
  *         description: No autorizado.
  *         content:
- *           text/plain:
+ *           text/html:
  *             schema:
  *               type: string
  *               example: Error, token inválido
  *       5XX:
  *         description: Error del servidor.
  *         content:
- *           text/plain:
+ *           text/html:
  *             schema:
  *               type: string
  *               example: Error, Atributos ingresados incorrectos.
@@ -155,21 +149,21 @@ const validarToken = require("../libs/validarToken");
  *       401:
  *         description: No autorizado.
  *         content:
- *           text/plain:
+ *           text/html:
  *             schema:
  *               type: string
  *               example: Error, token inválido
  *       404:
  *         description: No encontrado.
  *         content:
- *           text/plain:
+ *           text/html:
  *             schema:
  *               type: string
  *               example: Error, carrera con {id} no encontrado.
  *       5XX:
  *         description: Error en el servidor.
  *         content:
- *           text/plain:
+ *           text/html:
  *             schema:
  *               type: string
  *               example: Error interno del servidor.
@@ -223,21 +217,21 @@ const validarToken = require("../libs/validarToken");
  *       401:
  *         description: No autorizado.
  *         content:
- *           text/plain:
+ *           text/html:
  *             schema:
  *               type: string
  *               example: Error, token inválido
  *       404:
  *         description: No encontrado.
  *         content:
- *           text/plain:
+ *           text/html:
  *             schema:
  *               type: string
  *               example: Error, carrera con {id} no encontrado.
  *       5XX:
  *         description: Error en el servidor.
  *         content:
- *           text/plain:
+ *           text/html:
  *             schema:
  *               type: string
  *               example: Error interno del servidor.
@@ -259,28 +253,28 @@ const validarToken = require("../libs/validarToken");
  *       200:
  *         description: OK.
  *         content:
- *           text/plain:
+ *           text/html:
  *             schema:
  *               type: string
  *               example: Éxito al eliminar carrera.
  *       401:
  *         description: No autorizado.
  *         content:
- *           text/plain:
+ *           text/html:
  *             schema:
  *               type: string
  *               example: Error, token inválido
  *       404:
  *         description: No encontrado.
  *         content:
- *           text/plain:
+ *           text/html:
  *             schema:
  *               type: string
  *               example: Error, carrera con {id} no encontrado.
  *       5XX:
  *         description: Error en el servidor.
  *         content:
- *           text/plain:
+ *           text/html:
  *             schema:
  *               type: string
  *               example: Error interno del servidor.
