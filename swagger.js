@@ -27,14 +27,14 @@ const swaggerSpec = swaggerJSDoc(options);
 //Setup para documentación
 const swaggerDocs = (app, port) => {
   //Ruteo a los docs
-  app.use("/apidocs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  app.use("/apiepdoc", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
   //Para documentación disponible en formato JSON
-  app.get("/apidocs.json", (req, res) => {
+  app.get("/apiepdoc.json", (req, res) => {
     res.setHeader("Content-Type", "application/json");
     res.send(swaggerSpec);
   });
   console.log(`API corriendo en puerto ${port}...`);
-  console.log(`Documentación disponible en http://localhost:${port}/apidocs`);
+  console.log(`Documentación disponible en http://localhost:${port}/apiepdoc`);
 };
 
 module.exports = { swaggerDocs };

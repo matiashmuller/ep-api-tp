@@ -27,6 +27,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 //Documentación
 swaggerDocs(app, process.env.PORT || 3000)
+//Rutas
 app.use('/auth', authRouter);
 app.use('/car', carrerasRouter);
 app.use('/doc', docentesRouter);
@@ -35,6 +36,7 @@ app.use('/mat', materiasRouter);
 app.use('/com', comisionesRouter);
 app.use('/almat', al_matRouter);
 app.use('/carmat', car_matRouter);
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
