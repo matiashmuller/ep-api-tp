@@ -35,7 +35,7 @@ async function registrarUsuario(req, res) {
     logger.info(`Éxito al registrar ${nombreEntidad}. Usuario nuevo: ${nombre}.`, loggerMeta(req, res));
   } catch (error) {
     //Envía respuestas de error y logs a consola y bd
-    responderAlError(error, req, res, 1, nombreEntidad)
+    responderAlError(error, req, res, nombreEntidad);
   }
 }
 
@@ -89,7 +89,7 @@ async function verCuenta(req, res) {
     res.status(200).json({ estado: 'Éxito al mostrar cuenta.', usuario });
     logger.info(`Éxito al mostrar cuenta. Usuario: '${usuario.nombre}'`, loggerMeta(req, res));
   } catch (error) {
-    responderAlError(error, req, res, req.id, nombreEntidad);
+    responderAlError(error, req, res);
   }
 }
 

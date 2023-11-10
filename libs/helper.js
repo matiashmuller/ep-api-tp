@@ -15,7 +15,7 @@ const noAutorizado = [
 ]
 
 //Responde y loguea según el error
-const responderAlError = (error, req, res, id = 1, nombreEntidad = 'registro') => {
+const responderAlError = (error, req, res, nombreEntidad = 'registro') => {
   if (error == "SequelizeUniqueConstraintError: Validation error") {
     res.status(400).send(`Error: Esx ${nombreEntidad} ya existe en la base de datos.`)
   } else if (noAutorizado.includes(error.message)) {
@@ -23,7 +23,7 @@ const responderAlError = (error, req, res, id = 1, nombreEntidad = 'registro') =
   } else if (error.message == ('Usuario no encontrado.')) {
     res.status(404).send(`Error: ${error.message}`);
   } else if (error.message == `No encontrado.`) {
-    res.status(404).send(`Error: ${nombreEntidad} con id ${id} no encontrado.`);
+    res.status(404).send(`Error: ${nombreEntidad} con id ${req.params.id} no encontrado.`);
   } else {
     res.status(500).send(`Error: ${error.message}`);
   }

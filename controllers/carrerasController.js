@@ -75,7 +75,7 @@ async function obtenerTodasCarreras(req, res) {
     });
     logger.info(`Éxito al mostrar ${nombreEntidad}s.`, loggerMeta(req, res));
   } catch (error) {
-    responderAlError(error, req, res, 1, nombreEntidad);
+    responderAlError(error, req, res);
   }
 }
 
@@ -86,7 +86,7 @@ async function obtenerCarreraPorId(req, res) {
     res.json(registro);
     logger.info(`Éxito al mostrar ${nombreEntidad}.`, loggerMeta(req, res));
   } catch (error) {
-    responderAlError(error, req, res, req.params.id, nombreEntidad);
+    responderAlError(error, req, res, nombreEntidad);
   }
 }
 
@@ -106,7 +106,7 @@ async function registrarCarrera(req, res) {
     res.status(201).send({ estado: `Éxito al crear ${nombreEntidad}`, id: registro.id });
     logger.info(`Éxito al registrar ${nombreEntidad}.`, loggerMeta(req, res));
   } catch (error) {
-    responderAlError(error, req, res, 1, nombreEntidad);
+    responderAlError(error, req, res, nombreEntidad);
   }
 }
 
@@ -123,7 +123,7 @@ async function actualizarCarrera(req, res) {
     res.status(200).json({ estado: `Éxito al actualizar ${nombreEntidad}.`, actualizado: registroActualizado });
     logger.info(`Éxito al actualizar ${nombreEntidad}`, loggerMeta(req, res));
   } catch (error) {
-    responderAlError(error, req, res, req.params.id, nombreEntidad);
+    responderAlError(error, req, res, nombreEntidad);
   }
 }
 
@@ -138,7 +138,7 @@ async function borrarCarrera(req,res){
     res.status(200).send(`Éxito al eliminar ${nombreEntidad}.`);
     logger.info(`Éxito al eliminar ${nombreEntidad}.`, loggerMeta(req, res));
   } catch (error) {
-    responderAlError(error, req, res, req.params.id, nombreEntidad);
+    responderAlError(error, req, res, nombreEntidad);
   }
 }
 
