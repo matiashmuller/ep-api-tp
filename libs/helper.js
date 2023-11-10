@@ -3,19 +3,17 @@ const validator = require('validator')
 
 //Funciones auxiliares
 
-//Respuesta a errores con log a consola y bd
-
-//Mensajes que disparan 401
-const noAutorizado = [
+//Respuesta a errores según el error, con log a consola y bd
+const responderAlError = (error, req, res, nombreEntidad = 'registro') => {
+  //Mensajes que disparan 401
+  const noAutorizado = [
   'Contraseña incorrecta.',
   'Ingrese un email válido.',
   'Contraseña y nombre de usuario o email requerido.',
   'No existe token.',
   'Token inválido.'
-]
+  ]
 
-//Responde y loguea según el error
-const responderAlError = (error, req, res, nombreEntidad = 'registro') => {
   if (error == "SequelizeUniqueConstraintError: Validation error") {
     res.status(400).send(`Error: Esx ${nombreEntidad} ya existe en la base de datos.`)
   } else if (noAutorizado.includes(error.message)) {

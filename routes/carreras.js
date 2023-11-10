@@ -36,18 +36,15 @@ const validarToken = require("../libs/validarToken");
  *                      "totalPaginas": 1,
  *                      "paginaNro": 1,
  *                      "elementos": [{
- *                                  "id": 1,
- *                                  "nombre": "Licenciatura en informática",
- *                                  "materiasIncluidas": [{
- *                                    "nombre": "Organización de computadoras",
- *                                    "carga_horaria": 8,
- *                                    "carrera_materia": { "id": 1 }
- *                                  }],
- *                                  "alumnosInscriptos": [{
- *                                      "dni": 42565852,
- *                                      "nombre": "Ezequiel",
- *                                      "apellido": "Agüero"
- *                                  }]
+ *                        "id": 1,
+ *                        "nombre": "Licenciatura en informática",
+ *                        "materiasIncluidas": [
+ *                          {"id_materia": 1, "materia": { "nombre":"Matemática I" } },
+ *                          {"id_materia": 2, "materia": { "nombre":"Organización de computadoras" } }
+ *                        ],
+ *                        "alumnosInscriptos": [
+ *                          { "dni": 42565852, "nombre": "Ezequiel", "apellido": "Agüero" }
+ *                        ]
  *                      }]
  *               }
  *       401:
@@ -134,16 +131,13 @@ const validarToken = require("../libs/validarToken");
  *               example: {
  *                         "id": 1,
  *                         "nombre": "Licenciatura en informática",
- *                         "materiasIncluidas": [{
- *                           "nombre": "Organización de computadoras",
- *                           "carga_horaria": 8,
- *                           "carrera_materia": { "id": 1 }
- *                         }],
- *                         "alumnosInscriptos": [{
- *                             "dni": 42565852,
- *                             "nombre": "Ezequiel",
- *                             "apellido": "Agüero"
- *                         }]
+ *                         "materiasIncluidas": [
+ *                           {"id_materia": 1, "materia": { "nombre":"Matemática I" } },
+ *                           {"id_materia": 2, "materia": { "nombre":"Organización de computadoras" } }
+ *                         ],
+ *                         "alumnosInscriptos": [
+ *                           { "dni": 42565852, "nombre": "Ezequiel", "apellido": "Agüero" }
+ *                         ]
  *               }
  *         
  *       401:
@@ -187,7 +181,7 @@ const validarToken = require("../libs/validarToken");
  *         application/json:
  *           schema:
  *             type: object
- *             example: { "nombre": "Licenciatura en química" }
+ *             example: { "nombre": "Licenciatura en sistemas" }
  *     responses:
  *       200:
  *         description: OK.
@@ -198,19 +192,16 @@ const validarToken = require("../libs/validarToken");
  *               example: {
  *                          "estado":"Éxito al actualizar carrera.",
  *                          "actualizado": {
- *                                        "id": 1,
- *                                        "nombre": "Licenciatura en informática",
- *                                        "materiasIncluidas": [{
- *                                          "nombre": "Organización de computadoras",
- *                                          "carga_horaria": 8,
- *                                          "carrera_materia": { "id": 1 }
- *                                        }],
- *                                        "alumnosInscriptos": [{
- *                                            "dni": 42565852,
- *                                            "nombre": "Ezequiel",
- *                                            "apellido": "Agüero"
- *                                        }],
- *                          "updatedAt": "2023-11-08T00:26:14.672Z"
+ *                            "id": 1,
+ *                            "nombre": "Licenciatura en sistemas",
+ *                            "materiasIncluidas": [
+ *                              {"id_materia": 1, "materia": { "nombre":"Matemática I" } },
+ *                              {"id_materia": 2, "materia": { "nombre":"Organización de computadoras" } }
+ *                            ],
+ *                            "alumnosInscriptos": [
+ *                              { "dni": 42565852, "nombre": "Ezequiel", "apellido": "Agüero" }
+ *                            ],
+ *                            "updatedAt": "2023-11-08T00:26:14.672Z"
  *                          }
  *               }
  * 

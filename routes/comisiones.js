@@ -32,24 +32,17 @@ const validarToken = require("../libs/validarToken");
  *             schema:
  *               type: object
  *               example: {
- *                       "totalElementos": 1,
- *                       "totalPaginas": 1,
- *                       "paginaNro": 1,
- *                       "elementos": [{
- *                                   "id": 1,
- *                                   "letra": "A",
- *                                   "dias": "Lunes",
- *                                   "turno": "Mañana",
- *                                   "materia": {
- *                                       "id": 1,
- *                                       "nombre": "Organización de computadoras"
- *                                   },
- *                                   "docente": {
- *                                       "id": 1,
- *                                       "nombre": "Marcela",
- *                                       "apellido": "Villalba"
- *                                   }
- *                       }]
+ *                 "totalElementos": 1,
+ *                 "totalPaginas": 1,
+ *                 "paginaNro": 1,
+ *                 "elementos": [{
+ *                   "id": 1,
+ *                   "letra": "A",
+ *                   "dias": "Lunes",
+ *                   "turno": "Mañana",
+ *                   "materia": { "id": 1, "nombre": "Organización de computadoras" },
+ *                   "docente": { "id": 1, "nombre": "Marcela", "apellido": "Villalba" }
+ *                 }]
  *               }
  *       401:
  *         description: No autorizado.
@@ -133,19 +126,12 @@ const validarToken = require("../libs/validarToken");
  *             schema:
  *               type: object
  *               example: {
- *                       "id": 1,
- *                       "letra": "A",
- *                       "dias": "Lunes",
- *                       "turno": "Mañana",
- *                       "materia": {
- *                                 "id": 1,
- *                                 "nombre": "Organización de computadoras"
- *                       },
- *                       "docente": {
- *                                 "id": 1,
- *                                 "nombre": "Marcela",
- *                                 "apellido": "Villalba"
- *                       }
+ *                 "id": 1,
+ *                 "letra": "A",
+ *                 "dias": "Lunes",
+ *                 "turno": "Mañana",
+ *                 "materia": { "id": 1, "nombre": "Organización de computadoras" },
+ *                 "docente": { "id": 1, "nombre": "Marcela", "apellido": "Villalba" }
  *               }
  *         
  *       401:
@@ -189,7 +175,7 @@ const validarToken = require("../libs/validarToken");
  *         application/json:
  *           schema:
  *             type: object
- *             example: {"letra": "A", "dias": "Lunes","turno": "Mañana","id_materia": 1,"id_docente": 1}
+ *             example: {"turno": "Tarde"}
  *     responses:
  *       200:
  *         description: OK.
@@ -198,25 +184,18 @@ const validarToken = require("../libs/validarToken");
  *             schema:
  *               type: object
  *               example: {
- *                       "estado":"Éxito al actualizar comisión.",
- *                       "actualizado": {
- *                                    "id": 1,
- *                                    "letra": "A",
- *                                    "dias": "Lunes",
- *                                    "turno": "Mañana",
- *                                    "materia": {
- *                                              "id": 1,
- *                                              "nombre": "Organización de computadoras"
- *                                    },
- *                                    "docente": {
- *                                              "id": 1,
- *                                              "nombre": "Marcela",
- *                                              "apellido": "Villalba"
- *                                    },
- *                                    "id_materia": 1,
- *                                    "id_docente": 1,
- *                                    "updatedAt": "2023-11-08T00:26:14.672Z"
- *                       },
+ *                 "estado":"Éxito al actualizar comisión.",
+ *                 "actualizado": {
+ *                   "id": 1,
+ *                   "letra": "A",
+ *                   "dias": "Lunes",
+ *                   "turno": "Tarde",
+ *                   "materia": { "id": 1, "nombre": "Organización de computadoras" },
+ *                   "docente": { "id": 1, "nombre": "Marcela", "apellido": "Villalba" },
+ *                   "id_materia": 1,
+ *                   "id_docente": 1,
+ *                   "updatedAt": "2023-11-08T00:26:14.672Z"
+ *                 }
  *               }
  * 
  *       401:

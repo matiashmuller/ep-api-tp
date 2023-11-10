@@ -32,33 +32,28 @@ const validarToken = require("../libs/validarToken");
  *             schema:
  *               type: object
  *               example: {
- *                      "totalElementos": 1,
- *                      "totalPaginas": 1,
- *                      "paginaNro": 1,
- *                      "elementos": [{
- *                                  "id": 1,
- *                                  "nombre": "Organización de computadoras",
- *                                  "carga_horaria": 8,
- *                                  "carrerasQueLaIncluyen": [{
- *                                    "nombre": "Licenciatura en informática",
- *                                    "carrera_materia": { "id": 1 }
- *                                  }],
- *                                  "comisiones": [{
- *                                      "letra": "A",
- *                                      "dias": "Lunes",
- *                                      "turno": "Mañana",
- *                                      "docente": {
- *                                        "id": 1,
- *                                        "nombre": "Marcela",
- *                                        "apellido": "Villalba"
- *                                      }
- *                                  }],
- *                                  "alumnQueLaCursan": [{
- *                                      "nombre": "Ezequiel",
- *                                      "apellido": "Agüero",
- *                                      "alumno_materia": { "id" : 1 }
- *                                  }]
- *                      }]
+ *                 "totalElementos": 1,
+ *                 "totalPaginas": 1,
+ *                 "paginaNro": 1,
+ *                 "elementos": [{
+ *                   "id": 1,
+ *                   "nombre": "Organización de computadoras",
+ *                   "carga_horaria": 8,
+ *                   "carrerasQueLaIncluyen": [{
+ *                     "id_carrera": 1,
+ *                     "carrera": { "nombre": Licenciatura en informática }
+ *                   }],
+ *                   "comisiones": [{
+ *                     "letra": "A",
+ *                     "dias": "Lunes",
+ *                     "turno": "Mañana",
+ *                     "docente": { "id": 1, "nombre": "Marcela", "apellido": "Villalba" }
+ *                   }],
+ *                   "alumnQueLaCursan": [{
+ *                     "id_alumno": 1,
+ *                     "alumno": { "nombre": "Ezequiel", "apellido": "Agüero" }
+ *                   }]
+ *                 }]
  *               }
  *       401:
  *         description: No autorizado.
@@ -142,28 +137,23 @@ const validarToken = require("../libs/validarToken");
  *             schema:
  *               type: object
  *               example: {
- *                       "id": 1,
- *                       "nombre": "Organización de computadoras",
- *                       "carga_horaria": 8,
- *                       "carrerasQueLaIncluyen": [{
- *                         "nombre": "Licenciatura en informática",
- *                         "carrera_materia": { "id": 1 }
- *                       }],
- *                       "comisiones": [{
- *                         "letra": "A",
- *                         "dias": "Lunes",
- *                         "turno": "Mañana",
- *                         "docente": {
- *                           "id": 1,
- *                           "nombre": "Marcela",
- *                           "apellido": "Villalba"
- *                         }
- *                       }],
- *                       "alumnQueLaCursan": [{
- *                         "nombre": "Ezequiel",
- *                         "apellido": "Agüero",
- *                         "alumno_materia": { "id" : 1 }
- *                       }]
+ *                 "id": 1,
+ *                 "nombre": "Organización de computadoras",
+ *                 "carga_horaria": 8,
+ *                 "carrerasQueLaIncluyen": [{
+ *                   "id_carrera": 1,
+ *                   "carrera": { "nombre": Licenciatura en informática }
+ *                 }],
+ *                 "comisiones": [{
+ *                   "letra": "A",
+ *                   "dias": "Lunes",
+ *                   "turno": "Mañana",
+ *                   "docente": { "id": 1, "nombre": "Marcela", "apellido": "Villalba" }
+ *                 }],
+ *                 "alumnQueLaCursan": [{
+ *                   "id_alumno": 1,
+ *                   "alumno": { "nombre": "Ezequiel", "apellido": "Agüero" }
+ *                 }]
  *               }
  *         
  *       401:
@@ -207,7 +197,7 @@ const validarToken = require("../libs/validarToken");
  *         application/json:
  *           schema:
  *             type: object
- *             example: { "nombre": "Introducción a la programación", "carga_horaria": 8 }
+ *             example: { "carga_horaria": 6 }
  *     responses:
  *       200:
  *         description: OK.
@@ -216,32 +206,27 @@ const validarToken = require("../libs/validarToken");
  *             schema:
  *               type: object
  *               example: {
- *                          "estado":"Éxito al actualizar materia.",
- *                          "actualizado": {
- *                                  "id": 1,
- *                                  "nombre": "Introducción a la programación",
- *                                  "carga_horaria": 8,
- *                                  "carrerasQueLaIncluyen": [{
- *                                    "nombre": "Licenciatura en informática",
- *                                    "carrera_materia": { "id": 1 }
- *                                  }],
- *                                  "comisiones": [{
- *                                    "letra": "A",
- *                                    "dias": "Lunes",
- *                                    "turno": "Mañana",
- *                                    "docente": {
- *                                      "id": 1,
- *                                      "nombre": "Marcela",
- *                                      "apellido": "Villalba"
- *                                    }
- *                                  }],
- *                                  "alumnQueLaCursan": [{
- *                                    "nombre": "Ezequiel",
- *                                    "apellido": "Agüero",
- *                                    "alumno_materia": { "id" : 1 }
- *                                  }],
- *                                  "updatedAt": "2023-11-08T00:26:14.672Z"
- *                          }
+ *                 "estado": "Éxito al actualizar materia",
+ *                 "actualizado": {
+ *                   "id": 1,
+ *                   "nombre": "Organización de computadoras",
+ *                   "carga_horaria": 6,
+ *                   "carrerasQueLaIncluyen": [{
+ *                     "id_carrera": 1,
+ *                     "carrera": { "nombre": Licenciatura en informática }
+ *                   }],
+ *                   "comisiones": [{
+ *                     "letra": "A",
+ *                     "dias": "Lunes",
+ *                     "turno": "Mañana",
+ *                     "docente": { "id": 1, "nombre": "Marcela", "apellido": "Villalba" }
+ *                   }],
+ *                   "alumnQueLaCursan": [{
+ *                     "id_alumno": 1,
+ *                     "alumno": { "nombre": "Ezequiel", "apellido": "Agüero" }
+ *                   }],
+ *                   "updatedAt": "2023-11-08T00:26:14.672Z"
+ *                 }
  *               }
  * 
  *       401:

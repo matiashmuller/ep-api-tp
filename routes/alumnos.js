@@ -49,8 +49,8 @@ const validarToken = require("../libs/validarToken");
  *                                  "fecha_nac": "1995-07-06",
  *                                  "carreraQueEstudia": {"nombre":"Licenciatura en informática"},
  *                                  "materiasQueCursa": [
- *                                    {"nombre":"Matemática I","carga_horaria":8,"alumno_materia":{"id":1}},
- *                                    {"nombre":"Organización de computadoras","carga_horaria":8,"alumno_materia":{"id":2}}
+ *                                    {"id_materia": 1, "materia": { "nombre":"Matemática I" } },
+ *                                    {"id_materia": 2, "materia": { "nombre":"Organización de computadoras" } }
  *                                  ]
  *                      }]
  *               }
@@ -143,8 +143,8 @@ const validarToken = require("../libs/validarToken");
  *                          "fecha_nac": "1995-07-06",
  *                          "carreraQueEstudia": {"nombre":"Licenciatura en informática"},
  *                          "materiasQueCursa": [
- *                            {"nombre":"Matemática I","carga_horaria":8,"alumno_materia":{"id":1}},
- *                            {"nombre":"Organización de computadoras","carga_horaria":8,"alumno_materia":{"id":2}}
+ *                            {"id_materia": 1, "materia": { "nombre":"Matemática I" } },
+ *                            {"id_materia": 2, "materia": { "nombre":"Organización de computadoras" } }
  *                          ]
  *               }
  *         
@@ -189,7 +189,7 @@ const validarToken = require("../libs/validarToken");
  *         application/json:
  *           schema:
  *             type: object
- *             example: {"dni": 39666777,"nombre": "Ezequiel","apellido": "López","fecha_nac": "1995-07-06","id_carrera": 1}
+ *             example: {"apellido": "López"}
  *     responses:
  *       200:
  *         description: OK.
@@ -203,12 +203,12 @@ const validarToken = require("../libs/validarToken");
  *                            "id": 1,
  *                            "dni": 45666777,
  *                            "nombre": "Ezequiel",
- *                            "apellido": "Agüero",
+ *                            "apellido": "López",
  *                            "fecha_nac": "1995-07-06",
  *                            "carreraQueEstudia": {"nombre":"Licenciatura en informática"},
  *                            "materiasQueCursa": [
- *                              {"nombre":"Matemática I","carga_horaria":8,"alumno_materia":{"id":1}},
- *                              {"nombre":"Organización de computadoras","carga_horaria":8,"alumno_materia":{"id":2}}
+ *                              {"id_materia": 1, "materia": { "nombre":"Matemática I" } },
+ *                              {"id_materia": 2, "materia": { "nombre":"Organización de computadoras" } }
  *                            ],
  *                            "id_carrera":1,
  *                            "updatedAt":"2023-11-07T04:18:01.860Z"
