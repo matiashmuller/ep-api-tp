@@ -91,7 +91,7 @@ const comprobarAtributos = (atributosAComparar, req, esUpdate = false, esAuth = 
 const comprobarLogin = (req) => {
   const { nombre, email, contraseña } = req.body;
   if (!(nombre || email) || !contraseña) { throw new Error('Contraseña y nombre de usuario o email requerido.') }
-  if (!nombre && email) { validarEmail(email) }
+  if (email) { validarEmail(email) }
 }
 
 //Valida si un supuesto email tiene el formato correcto, de no ser así, lanza error

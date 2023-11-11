@@ -32,21 +32,16 @@ const validarToken = require("../libs/validarToken");
  *             schema:
  *               type: object
  *               example: {
- *                       "totalElementos": 1,
- *                       "totalPaginas": 1,
- *                       "paginaNro": 1,
- *                       "elementos": [{
- *                                   "id": 1,
- *                                   "carrera": {
- *                                       "id": 1,
- *                                       "nombre": "Licenciatura en informática"
- *                                   },
- *                                   "materia": {
- *                                       "id": 1,
- *                                       "nombre": "Organización de computadoras"
- *                                   }
- *                       }]
+ *                 "totalElementos": 1,
+ *                 "totalPaginas": 1,
+ *                 "paginaNro": 1,
+ *                 "elementos": [{
+ *                   "id": 1,
+ *                   "carrera": { "id": 1, "nombre": "Licenciatura en informática" },
+ *                   "materia": { "id": 1, "nombre": "Organización de computadoras" }
+ *                 }]
  *               }
+ * 
  *       401:
  *         description: No autorizado.
  *         content:
@@ -129,15 +124,9 @@ const validarToken = require("../libs/validarToken");
  *             schema:
  *               type: object
  *               example: {
- *                       "id": 1,
- *                       "carrera": {
- *                                 "id": 1,
- *                                 "nombre": "Licenciatura en informática"
- *                       },
- *                       "materia": {
- *                                 "id": 1,
- *                                 "nombre": "Organización de computadoras"
- *                       }
+ *                 "id": 1,
+ *                 "carrera": { "id": 1, "nombre": "Licenciatura en informática" },
+ *                 "materia": { "id": 1, "nombre": "Organización de computadoras" }
  *               }
  *         
  *       401:
@@ -181,7 +170,7 @@ const validarToken = require("../libs/validarToken");
  *         application/json:
  *           schema:
  *             type: object
- *             example: {"id_carrera": 2,"id_materia": 1}
+ *             example: { "id_materia": 2 }
  *     responses:
  *       200:
  *         description: OK.
@@ -190,21 +179,14 @@ const validarToken = require("../libs/validarToken");
  *             schema:
  *               type: object
  *               example: {
- *                       "estado":"Éxito al actualizar carrera_materia.",
- *                       "actualizado": {
- *                                    "id": 1,
- *                                    "carrera": {
- *                                      "id": 2,
- *                                      "nombre": "Tecnicatura en redes"
- *                                    },
- *                                    "materia": {
- *                                      "id": 1,
- *                                      "nombre": "Organización de computadoras"
- *                                    },
- *                                    "id_carrera": 2,
- *                                    "id_docente": 1,
- *                                    "updatedAt": "2023-11-08T00:26:14.672Z"
- *                       }
+ *                 "estado":"Éxito al actualizar carrera_materia.",
+ *                 "actualizado": {
+ *                   "id": 1,
+ *                   "carrera": { "id": 1, "nombre": "Licenciatura en informática" },
+ *                   "materia": { "id": 2, "nombre": "Introducción a la programación" },
+ *                   "id_materia": 2,
+ *                   "updatedAt": "2023-11-08T00:26:14.672Z"
+ *                 }
  *               }
  * 
  *       401:

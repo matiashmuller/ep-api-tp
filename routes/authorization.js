@@ -23,7 +23,7 @@ const { registrarUsuario, iniciarSesion, verCuenta, cerrarSesion } = require('..
  *                  example: Matías
  *                email:
  *                  type: string
- *                  example: matias@mail.com 
+ *                  example: matias@email.com 
  *                contraseña:
  *                  type: string
  *                  example: 1234
@@ -35,8 +35,8 @@ const { registrarUsuario, iniciarSesion, verCuenta, cerrarSesion } = require('..
  *             schema:
  *               type: object
  *               example: {
- *                       "estado":"Éxito al registrar usuario. Usuario nuevo: Matías.",
- *                       "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjk5MzI5OTg1LCJleHAiOjE2OTkzNDQzODV9.GCwpHIhRH930NASgLGvIMHp7732YwhzRt20R_-sBJAM"
+ *                 "estado":"Éxito al registrar usuario. Usuario nuevo: Matías.",
+ *                 "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjk5MzI5OTg1LCJleHAiOjE2OTkzNDQzODV9.GCwpHIhRH930NASgLGvIMHp7732YwhzRt20R_-sBJAM"
  *               }
  *       400:
  *         description: Bad request.
@@ -73,12 +73,9 @@ const { registrarUsuario, iniciarSesion, verCuenta, cerrarSesion } = require('..
  *           schema:
  *             type: object
  *             properties:
- *                nombre:
- *                  type: string
- *                  example: Matías
  *                email:
  *                  type: string
- *                  example: matias@mail.com 
+ *                  example: matias@email.com 
  *                contraseña:
  *                  type: string
  *                  example: 1234
@@ -90,8 +87,8 @@ const { registrarUsuario, iniciarSesion, verCuenta, cerrarSesion } = require('..
  *             schema:
  *               type: object
  *               example: {
- *                       "estado":"Éxito al iniciar sesión. Usuario autenticado Matías.",
- *                       "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjk5MzI5OTg1LCJleHAiOjE2OTkzNDQzODV9.GCwpHIhRH930NASgLGvIMHp7732YwhzRt20R_-sBJAM"
+ *                 "estado":"Éxito al iniciar sesión. Usuario autenticado Matías.",
+ *                 "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjk5MzI5OTg1LCJleHAiOjE2OTkzNDQzODV9.GCwpHIhRH930NASgLGvIMHp7732YwhzRt20R_-sBJAM"
  *               }
  *       401:
  *         description: No autorizado.
@@ -130,12 +127,8 @@ const { registrarUsuario, iniciarSesion, verCuenta, cerrarSesion } = require('..
  *             schema:
  *               type: object
  *               example: {
- *                         "estado": "Éxito al mostrar cuenta.",
- *                         "usuario": {
- *                           "id": 1,
- *                           "nombre": "Matías",
- *                           "email": "matias@mail.com"
- *                         }
+ *                 "estado": "Éxito al mostrar cuenta.",
+ *                 "usuario": { "id": 1, "nombre": "Matías", "email": "matias@email.com" }
  *               }
  *       404:
  *         description: No encontrado.
