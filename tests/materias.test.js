@@ -108,10 +108,8 @@ describe('PUT /mat/:id', () => {
     //Emula findOne encontrando a 'materiasRandom[0]'
     const mockFindOne = jest.spyOn(materia, 'findOne').mockImplementationOnce(() => (materiasRandom[0]))
 
-    //Prepara el body para la request, el 'clon' sin id
-    const bodyParaActualizar = Object.fromEntries(Object.entries(clon).slice(1));
-    //Hace la petición HTTP que lanza findOne y update, enviando el body 'bodyParaActualizar'
-    const { statusCode, body } = await request(app).put('/mat/1').send(bodyParaActualizar);
+    //Hace la petición HTTP que lanza findOne y update, enviando el body con la propiedad a actualizar y el valor deseado
+    const { statusCode, body } = await request(app).put('/mat/1').send({ nombre: 'Historia del rock nacional' });
 
     //Comprueba la corrección de los resultados
     //Cada mock ha sido llamado una vez

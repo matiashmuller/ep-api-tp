@@ -117,7 +117,7 @@ describe('PUT /carmat/:id', () => {
     //Emula findOne encontrando a 'relacionesCarreraMateria[0]'
     const mockFindOne = jest.spyOn(carrera_materia, 'findOne').mockImplementationOnce(() => (relacionesCarreraMateria[0]))
 
-    //Hace la petición HTTP que lanza findOne y update, enviando el body 'bodyParaActualizar'
+    //Hace la petición HTTP que lanza findOne y update, enviando el body con la propiedad a actualizar y el valor deseado
     const { statusCode, body } = await request(app).put('/carmat/1').send({ id_carrera: 3 });
 
     //Comprueba la corrección de los resultados

@@ -120,7 +120,7 @@ describe('PUT /com/:id', () => {
     //Emula findOne encontrando a 'comisionesRandom[0]'
     const mockFindOne = jest.spyOn(comision, 'findOne').mockImplementationOnce(() => (comisionesRandom[0]))
 
-    //Hace la petición HTTP que lanza findOne y update, enviando el body 'bodyParaActualizar'
+    //Hace la petición HTTP que lanza findOne y update, enviando el body con la propiedad a actualizar y el valor deseado
     const { statusCode, body } = await request(app).put('/com/1').send({ id_docente: 3 });
 
     //Comprueba la corrección de los resultados
