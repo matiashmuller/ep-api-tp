@@ -1,4 +1,4 @@
-const { responderAlError, buscarRegistro, comprobarAtributos } = require("../libs/helper");
+const { responderAlError, buscarRegistro, comprobarAtributos, comprobarFKeys } = require("../libs/helper");
 const { logger, loggerMeta } = require("../libs/logger");
 
 const models = require("../models");
@@ -81,7 +81,9 @@ async function obtenerAlMatPorId(req, res) {
 async function registrarAlMat(req, res) {
   try {
     //Comprueba validez de atributos ingresados en el cuerpo de la petición
-    comprobarAtributos(atributosACrearOActualizar, req)
+    comprobarAtributos(atributosACrearOActualizar, req);
+    //Comprueba que los valores ingresados referencien pks existentes
+    await comprobarFKeys(req);
     /*
     Crea el nuevo registro a partir de los atributos y valores ingresados
     en el cuerpo de la solicitud
@@ -101,7 +103,9 @@ async function registrarAlMat(req, res) {
 async function actualizarAlMat(req, res) {
   try {
     //Comprueba validez de atributos ingresados en el cuerpo de la petición
-    comprobarAtributos(atributosACrearOActualizar, req, true)
+    comprobarAtributos(atributosACrearOActualizar, req, true);
+    //Comprueba que los valores ingresados referencien pks existentes
+    await comprobarFKeys(req);
     //Busca el registro a actualizar
     const registro = await buscarRegistro(modelo, atributosABuscarYMostrar, relacionesAIncluir, req.params.id);
     //Actualiza los valores de los atributos del registro con los del cuerpo de la petición

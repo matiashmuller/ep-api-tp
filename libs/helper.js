@@ -1,5 +1,6 @@
 const { logger, loggerMeta } = require("./logger");
 const validator = require('validator')
+const modelos = require('../models')
 
 //Funciones auxiliares
 
@@ -7,11 +8,11 @@ const validator = require('validator')
 const responderAlError = (error, req, res, nombreEntidad = 'registro') => {
   //Mensajes que disparan 401
   const noAutorizado = [
-  'Contraseña incorrecta.',
-  'Ingrese un email válido.',
-  'Contraseña y nombre de usuario o email requerido.',
-  'No existe token.',
-  'Token inválido.'
+    'Contraseña incorrecta.',
+    'Ingrese un email válido.',
+    'Contraseña y nombre de usuario o email requerido.',
+    'No existe token.',
+    'Token inválido.'
   ]
 
   if (error == "SequelizeUniqueConstraintError: Validation error") {
@@ -101,4 +102,36 @@ const validarEmail = (email) => {
   }
 }
 
-module.exports = { responderAlError, buscarRegistro, comprobarAtributos, comprobarLogin }
+/**
+ * Comprueba que la o las foreign keys ingresadas en el cuerpo de la petición referencian una 
+ * clave primaria existente en la tabla correspondiente de la base de datos.
+ */
+const comprobarFKeys = async (req) => {
+  const { id_alumno, id_docente, id_carrera, id_materia } = req.body;
+
+  const fkeysYModelos = [
+    [id_alumno, modelos.alumno, 'alumno'], 
+    [id_docente, modelos.docente, 'docente'], 
+    [id_carrera, modelos.carrera, 'carrera'], 
+    [id_materia, modelos.materia, 'materia']
+  ];
+
+  for (const arr of fkeysYModelos) {
+    const fkey = arr[0];
+    if (fkey) {
+      const modelo = arr[1]
+      const nombreEntidad = arr[2]
+      await comprobarExistencia(fkey, modelo, nombreEntidad);
+    }
+  }
+
+  async function comprobarExistencia(idABuscar, modelo, nombreEntidad) {
+    const registro = await modelo.findOne({ where: idABuscar });
+    if (!registro) { 
+      throw new Error(`Clave foránea inválida, no existe ${nombreEntidad} a referenciar con id ${idABuscar}.`) 
+    }
+  }
+
+}
+
+module.exports = { responderAlError, buscarRegistro, comprobarAtributos, comprobarLogin, comprobarFKeys }

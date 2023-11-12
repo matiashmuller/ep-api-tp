@@ -43,23 +43,18 @@ async function iniciarSesion(req, res) {
   try {
     //Comprueba validez de atributos ingresados en el cuerpo de la petición
     comprobarLogin(req);
-    //Toma el nombre y la contraseña del cuerpo de la solicitud
+    //Toma el nombre, email y la contraseña del cuerpo de la solicitud
     const { nombre, email, contraseña } = req.body;
     //Busca un usuario según se provea nombre o email en el req.body
     const usuario = await models.usuario.findOne({
-      where:
-        nombre ? { nombre } : { email }
+      where: nombre ? { nombre } : { email }
     });
     //Si no encuentra el usuario, lanza error
-    if (!usuario) {
-      throw new Error('Usuario no encontrado.')
-    }
+    if (!usuario) { throw new Error('Usuario no encontrado.') }
     //Compara la contraseña especificada en el req.body con la almacenada en la db
     const esContraseñaValida = await bcrypt.compare(contraseña, usuario.contraseña);
     //Si la contraseña no es la misma, lanza error y no proporciona el token
-    if (!esContraseñaValida) {
-      throw new Error('Contraseña incorrecta.')
-    }
+    if (!esContraseñaValida) { throw new Error('Contraseña incorrecta.') }
     //Crea un token válido por 4h usando el id del usuario
     const id = usuario.id
     const token = jwt.sign(
