@@ -2,6 +2,8 @@ const app = require('../app');
 const request = require('supertest');
 const modelos = require('../models');
 const carrera_materia = modelos.carrera_materia
+const carrera = modelos.carrera
+const materia = modelos.materia
 
 //Simula elementos presentes en la base de datos
 const relacionesCarreraMateria = [
@@ -76,6 +78,9 @@ describe('GET /carmat/:id', () => {
 
 describe('POST /carmat', () => {
   test('debería registrar un nuevo carrera_materia', async () => {
+    //Emula el 'findOne' en los modelos relacionados correspondientes, disparados por la comprobación de fks 
+    const mockComprobarFk1 = jest.spyOn(carrera, 'findOne').mockReturnValueOnce({});
+    const mockComprobarFk2 = jest.spyOn(materia, 'findOne').mockReturnValueOnce({});
     //Envía respuesta emulada a partir del mock de create
     const mockCreate = jest.spyOn(carrera_materia, 'create').mockImplementationOnce(() => (relacionesCarreraMateria[0]));
     //Crea un nuevo objeto en base a relacionesCarreraMateria[0] sin la propiedad 'id', no necesaria en el ingreso de datos en el body
@@ -84,7 +89,9 @@ describe('POST /carmat', () => {
     const { statusCode, body } = await request(app).post('/carmat').send(bodyCarreraMateria);
 
     //Comprueba la corrección de los resultados
-    //El mock ha sido llamado una vez
+    //Cada mock ha sido llamado una vez
+    expect(mockComprobarFk1).toHaveBeenCalledTimes(1);
+    expect(mockComprobarFk2).toHaveBeenCalledTimes(1);
     expect(mockCreate).toHaveBeenCalledTimes(1);
     //Código de estado
     expect(statusCode).toBe(201);
@@ -97,6 +104,8 @@ describe('POST /carmat', () => {
 
 describe('PUT /carmat/:id', () => {
   test('debería actualizar un carrera_materia por su ID', async () => {
+    //Emula el 'findOne' en el modelo relacionado correspondiente, disparado por la comprobación de fks 
+    const mockComprobarFkCambiada = jest.spyOn(carrera, 'findOne').mockReturnValueOnce({});
     //Hace un clon de una carrera_materia y le cambia el id_carrera
     clon = structuredClone(relacionesCarreraMateria[0])
     clon.id_carrera = 3
@@ -108,13 +117,12 @@ describe('PUT /carmat/:id', () => {
     //Emula findOne encontrando a 'relacionesCarreraMateria[0]'
     const mockFindOne = jest.spyOn(carrera_materia, 'findOne').mockImplementationOnce(() => (relacionesCarreraMateria[0]))
 
-    //Prepara el body para la request, el 'clon' sin id
-    const bodyParaActualizar = Object.fromEntries(Object.entries(clon).slice(1));
     //Hace la petición HTTP que lanza findOne y update, enviando el body 'bodyParaActualizar'
-    const { statusCode, body } = await request(app).put('/carmat/1').send(bodyParaActualizar);
+    const { statusCode, body } = await request(app).put('/carmat/1').send({ id_carrera: 3 });
 
     //Comprueba la corrección de los resultados
     //Cada mock ha sido llamado una vez
+    expect(mockComprobarFkCambiada).toHaveBeenCalledTimes(1);
     expect(mockFindOne).toHaveBeenCalledTimes(1)
     expect(mockUpdate).toHaveBeenCalledTimes(1)
     //Código de estado

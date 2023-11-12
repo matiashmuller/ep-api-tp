@@ -2,6 +2,8 @@ const app = require('../app');
 const request = require('supertest');
 const modelos = require('../models');
 const alumno_materia = modelos.alumno_materia
+const alumno = modelos.alumno
+const materia = modelos.materia
 
 //Simula elementos presentes en la base de datos
 const relacionesAlumnoMateria = [
@@ -76,15 +78,20 @@ describe('GET /almat/:id', () => {
 
 describe('POST /almat', () => {
   test('debería registrar un nuevo alumno_materia', async () => {
+    //Emula el 'findOne' en los modelos relacionados correspondientes, disparados por la comprobación de fks
+    const mockComprobarFk1 = jest.spyOn(alumno, 'findOne').mockReturnValueOnce({});
+    const mockComprobarFk2 = jest.spyOn(materia, 'findOne').mockReturnValueOnce({});
     //Envía respuesta emulada a partir del mock de create
     const mockCreate = jest.spyOn(alumno_materia, 'create').mockImplementationOnce(() => (relacionesAlumnoMateria[0]));
     //Crea un nuevo objeto en base a relacionesAlumnoMateria[0] sin la propiedad 'id', no necesaria en el ingreso de datos en el body
-    const bodyalumno_materia = Object.fromEntries(Object.entries(relacionesAlumnoMateria[0]).slice(1));
+    const bodyAlumnoMateria = Object.fromEntries(Object.entries(relacionesAlumnoMateria[0]).slice(1));
     //Hace la petición HTTP que lanza create con los datos para 'body'
-    const { statusCode, body } = await request(app).post('/almat').send(bodyalumno_materia);
+    const { statusCode, body } = await request(app).post('/almat').send(bodyAlumnoMateria);
 
     //Comprueba la corrección de los resultados
-    //El mock ha sido llamado una vez
+    //Cada mock ha sido llamado una vez
+    expect(mockComprobarFk1).toHaveBeenCalledTimes(1);
+    expect(mockComprobarFk2).toHaveBeenCalledTimes(1);
     expect(mockCreate).toHaveBeenCalledTimes(1);
     //Código de estado
     expect(statusCode).toBe(201);
@@ -97,6 +104,8 @@ describe('POST /almat', () => {
 
 describe('PUT /almat/:id', () => {
   test('debería actualizar un alumno_materia por su ID', async () => {
+    //Emula el 'findOne' en el modelo relacionado correspondiente, disparado por la comprobación de fks
+    const mockComprobarFkCambiada = jest.spyOn(alumno, 'findOne').mockReturnValueOnce({});
     //Hace un clon de una alumno_materia y le cambia el id_alumno
     clon = structuredClone(relacionesAlumnoMateria[0])
     clon.id_alumno = 3
@@ -108,13 +117,12 @@ describe('PUT /almat/:id', () => {
     //Emula findOne encontrando a 'relacionesAlumnoMateria[0]'
     const mockFindOne = jest.spyOn(alumno_materia, 'findOne').mockImplementationOnce(() => (relacionesAlumnoMateria[0]))
 
-    //Prepara el body para la request, el 'clon' sin id
-    const bodyParaActualizar = Object.fromEntries(Object.entries(clon).slice(1));
-    //Hace la petición HTTP que lanza findOne y update, enviando el body 'bodyParaActualizar'
-    const { statusCode, body } = await request(app).put('/almat/1').send(bodyParaActualizar);
+    //Hace la petición HTTP que lanza findOne y update, enviando el body con la propiedad a actualizar y el valor deseado
+    const { statusCode, body } = await request(app).put('/almat/1').send({ id_alumno: 3 });
 
     //Comprueba la corrección de los resultados
     //Cada mock ha sido llamado una vez
+    expect(mockComprobarFkCambiada).toHaveBeenCalledTimes(1);
     expect(mockFindOne).toHaveBeenCalledTimes(1)
     expect(mockUpdate).toHaveBeenCalledTimes(1)
     //Código de estado

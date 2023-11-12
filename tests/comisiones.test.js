@@ -2,6 +2,8 @@ const app = require('../app');
 const request = require('supertest');
 const modelos = require('../models');
 const comision = modelos.comision
+const materia = modelos.materia
+const docente = modelos.docente
 
 //Simula elementos presentes en la base de datos
 const comisionesRandom = [
@@ -79,6 +81,9 @@ describe('GET /com/:id', () => {
 
 describe('POST /com', () => {
   test('debería registrar un nuevo comisión', async () => {
+    //Emula los 'findOne' en los modelos relacionados correspondientes, disparados por la comprobación de fks
+    const mockComprobarFk1 = jest.spyOn(materia, 'findOne').mockReturnValueOnce({});
+    const mockComprobarFk2 = jest.spyOn(docente, 'findOne').mockReturnValueOnce({});
     //Envía respuesta emulada a partir del mock de create
     const mockCreate = jest.spyOn(comision, 'create').mockImplementationOnce(() => (comisionesRandom[0]));
     //Crea un nuevo objeto en base a comisionesRandom[0] sin la propiedad 'id', no necesaria en el ingreso de datos en el body
@@ -87,7 +92,9 @@ describe('POST /com', () => {
     const { statusCode, body } = await request(app).post('/com').send(bodycomision);
 
     //Comprueba la corrección de los resultados
-    //El mock ha sido llamado una vez
+    //Cada mock ha sido llamado una vez
+    expect(mockComprobarFk1).toHaveBeenCalledTimes(1);
+    expect(mockComprobarFk2).toHaveBeenCalledTimes(1);
     expect(mockCreate).toHaveBeenCalledTimes(1);
     //Código de estado
     expect(statusCode).toBe(201);
@@ -100,6 +107,8 @@ describe('POST /com', () => {
 
 describe('PUT /com/:id', () => {
   test('debería actualizar un comision por su ID', async () => {
+    //Emula el 'findOne' en el modelo relacionado correspondiente, disparado por la comprobación de fks
+    const mockComprobarFkCambiada = jest.spyOn(docente, 'findOne').mockReturnValueOnce({});
     //Hace un clon de una comision y le cambia el id_docente
     clon = structuredClone(comisionesRandom[0])
     clon.id_docente = 3
@@ -111,13 +120,12 @@ describe('PUT /com/:id', () => {
     //Emula findOne encontrando a 'comisionesRandom[0]'
     const mockFindOne = jest.spyOn(comision, 'findOne').mockImplementationOnce(() => (comisionesRandom[0]))
 
-    //Prepara el body para la request, el 'clon' sin id
-    const bodyParaActualizar = Object.fromEntries(Object.entries(clon).slice(1));
     //Hace la petición HTTP que lanza findOne y update, enviando el body 'bodyParaActualizar'
-    const { statusCode, body } = await request(app).put('/com/1').send(bodyParaActualizar);
+    const { statusCode, body } = await request(app).put('/com/1').send({ id_docente: 3 });
 
     //Comprueba la corrección de los resultados
     //Cada mock ha sido llamado una vez
+    expect(mockComprobarFkCambiada).toHaveBeenCalledTimes(1);
     expect(mockFindOne).toHaveBeenCalledTimes(1)
     expect(mockUpdate).toHaveBeenCalledTimes(1)
     //Código de estado

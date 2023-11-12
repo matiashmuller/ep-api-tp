@@ -2,6 +2,7 @@ const app = require('../app');
 const request = require('supertest');
 const modelos = require('../models');
 const alumno = modelos.alumno
+const carrera = modelos.carrera
 
 //Simula elementos presentes en la base de datos
 const alumnosRandom = [
@@ -79,6 +80,8 @@ describe('GET /alum/:id', () => {
 
 describe('POST /alum', () => {
   test('debería registrar un nuevo alumno', async () => {
+    //Emula el 'findOne' en el modelo relacionado correspondiente, disparado por la comprobación de fks
+    const mockComprobarFk = jest.spyOn(carrera, 'findOne').mockReturnValueOnce({});
     //Envía respuesta emulada a partir del mock de create
     const mockCreate = jest.spyOn(alumno, 'create').mockImplementationOnce(() => (alumnosRandom[0]));
     //Crea un nuevo objeto en base a alumnosRandom[0] sin la propiedad 'id', no necesaria en el ingreso de datos en el body
@@ -87,7 +90,8 @@ describe('POST /alum', () => {
     const { statusCode, body } = await request(app).post('/alum').send(bodyAlumno);
 
     //Comprueba la corrección de los resultados
-    //El mock ha sido llamado una vez
+    //Cada mock ha sido llamado una vez
+    expect(mockComprobarFk).toHaveBeenCalledTimes(1)
     expect(mockCreate).toHaveBeenCalledTimes(1);
     //Código de estado
     expect(statusCode).toBe(201);
@@ -102,6 +106,10 @@ describe('PUT /alum/:id', () => {
   test('debería actualizar un alumno por su ID', async () => {
     //Hace un clon de un alumno y le cambia el nombre
     clon = structuredClone(alumnosRandom[0])
+    /**
+     * Ojo! Si se cambiara una propiedad fk sería necesario mockear el 'findOne' en el modelo relacionado,
+     * que sería disparado por la comprobación de fks. En este caso no aplica porque solo cambia el nombre.
+     */
     clon.nombre = 'Homero'
     //Emula un update de alumno devolviendo el clon con la propiedad cambiada
     const mockUpdate = jest.spyOn(alumno, 'update').mockImplementationOnce(() => (clon))
@@ -111,10 +119,8 @@ describe('PUT /alum/:id', () => {
     //Emula findOne encontrando a 'alumnosRandom[0]'
     const mockFindOne = jest.spyOn(alumno, 'findOne').mockImplementationOnce(() => (alumnosRandom[0]))
 
-    //Prepara el body para la request, el 'clon' sin id
-    const bodyParaActualizar = Object.fromEntries(Object.entries(clon).slice(1));
-    //Hace la petición HTTP que lanza findOne y update, enviando el body 'bodyParaActualizar'
-    const { statusCode, body } = await request(app).put('/alum/1').send(bodyParaActualizar);
+    //Hace la petición HTTP que lanza findOne y update, enviando el body con la propiedad a actualizar y el valor deseado
+    const { statusCode, body } = await request(app).put('/alum/1').send({ nombre: "Homero" });
 
     //Comprueba la corrección de los resultados
     //Cada mock ha sido llamado una vez
