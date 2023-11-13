@@ -77,6 +77,15 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date()
       },
+      {
+        letra: "B",
+        dias: "Jueves",
+        turno: "Tarde",
+        id_materia: 9, //bases de datos (redes, prog y lic)
+        id_docente: 6, //Rubio
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
     ]);
   },
 
