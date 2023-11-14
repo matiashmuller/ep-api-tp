@@ -59,7 +59,7 @@ Desarrollar una API (Application Programming Interface) utilizando Node.js + Seq
 - Carga de variables de entorno
   - [dotenv](https://www.npmjs.com/package/dotenv)
 
-- Seguridad
+- Seguridad e inicio de sesión
   - [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken)
   - [bcrypt](https://www.npmjs.com/package/bcrypt)
 
@@ -68,7 +68,7 @@ Desarrollar una API (Application Programming Interface) utilizando Node.js + Seq
   - [winston-mysql](https://www.npmjs.com/package/winston-mysql)
 
 - Tests unitarios
-  - [Jest](hhttps://jestjs.io/es-ES/docs/getting-started)
+  - [Jest](https://jestjs.io/es-ES/docs/getting-started)
   - [SuperTest](https://www.npmjs.com/package/supertest)
 
 - Validador de strings
@@ -78,6 +78,8 @@ Desarrollar una API (Application Programming Interface) utilizando Node.js + Seq
   - [swagger-jsdoc](https://www.npmjs.com/package/swagger-jsdoc)
   - [Swagger UI Express](https://www.npmjs.com/package/swagger-ui-express)
 
+- Reinicio automático (sugerido)
+  - [nodemon](https://www.npmjs.com/package/nodemon) 
 
 ### Para comenzar
 - Crear base de datos.
