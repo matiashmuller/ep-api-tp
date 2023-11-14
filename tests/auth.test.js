@@ -37,7 +37,7 @@ describe('POST /auth/login', () => {
     //Mock de bcrypt.compare() que emula comparación de contraseña hasheada correcta (responde 'true')
     const mockBcrypt = jest.spyOn(bcrypt, 'compare').mockReturnValueOnce(true);
 
-    //Hace la petición HTTP que lanza create enviando como body 'bodyUsuario'
+    //Hace la petición HTTP que lanza 'findOne' y compara la contraseña, enviando como cuerpo 'bodyLogin'
     const { statusCode, body } = await request(app).post('/auth/login').send(bodyLogin);
 
     //Comprueba la corrección de los resultados
@@ -74,7 +74,7 @@ describe('GET /auth/cuenta', () => {
     //Mock de findOne usuario que emula encontrar a usuarioRandom
     const mockFindOne = jest.spyOn(usuario, 'findOne').mockImplementationOnce(() => (usuarioRandom));
 
-    //Hace la petición HTTP que lanza create enviando como body 'bodyUsuario'
+    //Hace la petición HTTP que lanza 'findOne'
     const { statusCode, body } = await request(app).get('/auth/cuenta');
 
     //Comprueba la corrección de los resultados
