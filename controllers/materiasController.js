@@ -6,14 +6,6 @@ const modelo = models.materia
 const atributosABuscarYMostrar = ["id", "nombre", "carga_horaria"]
 const atributosACrearOActualizar = ["nombre", "carga_horaria"]
 const relacionesAIncluir = [{
-  /**
-  {
-  as: 'carrerasQueLaIncluyen',
-  model: models.carrera,
-  attributes: ["nombre"],
-  through: { attributes: ["id"] }
-  }
-   */
   as: 'carrerasQueLaIncluyen',
   model: models.carrera_materia,
   attributes: ["id_carrera"],
@@ -22,12 +14,6 @@ const relacionesAIncluir = [{
     attributes: ['nombre']
   }
 }, {
-  /**
-  as: 'profQueLaDictan',
-  model: models.docente,
-  attributes: ["nombre", "apellido"],
-  through: { attributes: ["letra", "dias", "turno"] }
-  */
   as: 'comisiones',
   model: models.comision,
   attributes: ["letra", "dias", "turno"],
@@ -36,14 +22,6 @@ const relacionesAIncluir = [{
     attributes: ['id', 'nombre', 'apellido']
   }
 }, {
-  /**
-  {
-  as: 'alumnQueLaCursan',
-  model: models.alumno,
-  attributes: ["nombre", "apellido"],
-  through: { attributes: ["id"] }
-  }
-   */
   as: 'alumnQueLaCursan',
   model: models.alumno_materia,
   attributes: ["id_alumno"],

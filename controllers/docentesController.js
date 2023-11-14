@@ -6,12 +6,6 @@ const modelo = models.docente
 const atributosABuscarYMostrar = ["id", "dni", "nombre", "apellido", "titulo", "fecha_nac"]
 const atributosACrearOActualizar = ["dni", "nombre", "apellido", "titulo", "fecha_nac"]
 const relacionesAIncluir = [{
-  /**
-  as: 'materiasQueDicta',
-  model: models.materia,
-  attributes: ["id", "nombre", "carga_horaria"],
-  through: { attributes: ["letra", "dias", "turno"] }
-  */
   as: 'comisionesAsignadas',
   model: models.comision,
   attributes: ["letra", "dias", "turno"],

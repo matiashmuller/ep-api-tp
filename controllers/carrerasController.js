@@ -6,14 +6,6 @@ const modelo = models.carrera
 const atributosABuscarYMostrar = ["id", "nombre"]
 const atributosACrearOActualizar = ["nombre"]
 const relacionesAIncluir = [{
-  /**
-  {
-  as: 'materiasIncluidas',
-  model: models.materia,
-  attributes: ["nombre", "carga_horaria"],
-  through: { attributes: ["id"] }
-  }
-   */
   as: 'materiasIncluidas',
   model: models.carrera_materia,
   attributes: ["id_materia"],
