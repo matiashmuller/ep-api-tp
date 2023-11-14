@@ -85,34 +85,47 @@ Desarrollar una API (Application Programming Interface) utilizando Node.js + Seq
 - Crear base de datos.
 - Clonar proyecto.
 - Agregar en el directorio raíz tu archivo .env con las variables de entorno, por ejemplo:
-```
-SECRET_KEY = dificildeadivinar
-DB_HOST = localhost
-DB_USER = root
-DB_PASS = 1234
-DB_NAME = ep-api-tp
-PORT = 3000
-NODE_ENV = 'development'
-```
+
+  ```
+  SECRET_KEY = dificildeadivinar
+  DB_HOST = localhost
+  DB_USER = root
+  DB_PASS = 1234
+  DB_NAME = ep-api-tp
+  PORT = 3000
+  NODE_ENV = 'development'
+  ```
 - Instalar dependencias
+
   ```
   npm i
   ```
 - Crear las tablas
+
   ```
   npx sequelize-cli db:migrate
   ```
 - Poblar tablas (opcional)
+
   ```
   npx sequelize-cli db:seed:all
   ```
-- Correr aplicación
+  - Nota: En caso de usar esta opción, los datos del usuario ejemplo que será creado y con el que vas a poder iniciar sesión (con nombre o email), serán:
+
+    ```
+    //nombre: 'matiashm'
+    email: 'matias@email.com'
+    contraseña: '1234'
+    ```
+- Arrancar aplicación
   - Con nodemon
+
     ```
     npx nodemon
     ```
   - Sin nodemon
+
     ```
     npm start
     ```
-- Para ver la documentación completa y probar funcionalidad, la ruta será http://localhost:3000/apiepdoc suponiendo el ejemplo de puerto 3000.
+- Una vez corriendo la API, para ver la documentación completa y probar funcionalidad, la ruta será http://localhost:3000/apiepdoc suponiendo el ejemplo de puerto 3000.
