@@ -87,13 +87,18 @@ Desarrollar una API (Application Programming Interface) utilizando Node.js + Seq
 - Agregar en el directorio raíz tu archivo .env con las variables de entorno, por ejemplo:
 
   ```
-  SECRET_KEY = dificildeadivinar
-  DB_HOST = localhost
-  DB_USER = root
-  DB_PASS = 1234
-  DB_NAME = ep-api-tp
-  PORT = 3000
+  SECRET_KEY = stringhash
+
   NODE_ENV = 'development'
+
+  API_PORT = 3000
+
+  DB_USER = root
+  DB_PASS = root
+  DB_NAME = ep-api-tp
+  DB_HOST = localhost
+  DB_PORT = 3306
+  DB_DIALECT = mysql
   ```
 - Instalar dependencias
 

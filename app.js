@@ -26,7 +26,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 //Documentación
-swaggerDocs(app, process.env.PORT || 3000)
+swaggerDocs(app, process.env.API_PORT || 3000)
 //Rutas
 app.use('/auth', authRouter);
 app.use('/car', carrerasRouter);

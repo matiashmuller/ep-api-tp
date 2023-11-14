@@ -4,6 +4,7 @@
     "password": "",
     "database": "ep-api-tp",
     "host": "localhost",
+    "port": 3306,
     "dialect": "mysql",
     "operatorsAliases": 0
   },
@@ -12,6 +13,7 @@
     "password": "",
     "database": "ep-api-tp",
     "host": "localhost",
+    "port": 3306,
     "dialect": "mysql",
     "operatorsAliases": 0
   }
